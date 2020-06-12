@@ -86,17 +86,11 @@ for (var i = 0; i < 19; ++i) {
                                            .map(response => response.json())
                                            .subscribe(res => {
                                              this.strand=res.data
-                                             for (var i = 0; i < res.data.length; ++i) {
-                                               if (res.data[i].strandCode=='ABM'||res.data[i].strandCode=='HUMSS'||res.data[i].strandCode=='STEM-NH'||res.data[i].strandCode=='STEM-H') {
-                                                 this.strandfiltered.push(res.data[i])
-                                               }
-                                             }
                                              this.strandfiltered=[]
                                              this.strandfiltered.push({strandId:'900009',strandTitle:'Accountancy, Business and Management Strand'})
                                              this.strandfiltered.push({strandId:'900011',strandTitle:'Humanities and Social Sciences Strand'})
                                              this.strandfiltered.push({strandId:'900013',strandTitle:'Science, Technology, Engineering and Mathematics Health Strand'})
                                              this.strandfiltered.push({strandId:'900010',strandTitle:'Science, Technology, Engineering and Mathematics-Non-Health Strand'})
-                                             console.log(res)
                                              this.loading = false
                                         },Error=>{
                                              this.global.swalAlertError()
@@ -281,7 +275,7 @@ accept=false
       }else
         strandval1 = parseInt(this.strandval1)
 
-
+        console.log(this.strandval)
     	var option=this.global.requestToken()
     	this.http.post(this.global.api+'/OnlineRegistration/Applicant' ,{
 			  "ProgramLevel": this.proglevelval,
