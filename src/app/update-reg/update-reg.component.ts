@@ -243,7 +243,6 @@ var date
         strandval1 = parseInt(this.strandval1)
         this.global.swalLoading("")
     	var option=this.global.requestToken()
-     
      	this.http.put(this.global.api+'OnlineRegistration/Applicant/'+ this.data.onedata.applicantNo,
     	{
         "ProgramLevel": this.proglevelval,
@@ -271,8 +270,8 @@ var date
         "ProofOfPayment": this.img,
         "EmailAddress": this.global.email,
         "PaymentVerified": 0,
-    		"RemarksVerification": "",
-    		"ReportCard": "",
+    		"RemarksVerification":  this.data.onedata.remarksVerification,
+    		"ReportCard": this.data.onedata.reportCard,
     		"ReferenceNo": "",
         "DatePaid": this.pdate
 			},option)

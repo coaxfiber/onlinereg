@@ -1,0 +1,22 @@
+
+            <div style="height: 5px"></div>
+              Upload report card<br>
+              <input mat-raised-button type="file" id="avatar" (change)="onFileChange($event)" #fileInput class="inputfile" style="margin-top: 10px;margin-bottom: 5px"/>
+          <div style="height: 10px"></div>
+          <div class="fullwidth" style="height: calc(100vh - 350px);overflow-y: auto;text-align: center;">
+              <img [src]='attachment'  *ngIf='attachment!=""' style="width:calc(100% - 30px)" />
+
+              <img src="assets/no-image-available.png" *ngIf='!(attachment!="")' style="width: 90%">
+          </div>
+          <div style="height: 10px"></div>
+
+
+<button mat-raised-button color="primary" style="background-color: #B22222;color: white;" (click)="closethis()">
+      <span class="material-icons">
+      close
+    </span> Cancel</button>
+    	
+          <button mat-raised-button color="primary" style="background-color: #3f51b5;color: white;float: right;" (click)="update()">
+            <span class="material-icons">
+            backup
+          </span> Upload</button>

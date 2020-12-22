@@ -6,7 +6,7 @@ const swal = Swal;
 @Injectable()
 export class GlobalService {
 
-  api = "http://api.usl.edu.ph/api/";
+  api = "http://testserver.usl.edu.ph/api/";
   token
   header = new Headers();
   option:any;
@@ -20,6 +20,23 @@ export class GlobalService {
     this.header.append("Content-Type", "application/json");
     this.option = new RequestOptions({ headers: this.header });
     return this.option
+  }
+
+ syDisplay(x){
+    var y = x.substring(0,4)
+    var z = parseInt(y) + 1
+    var a = y.toString() + " - " + z.toString();
+    var b = x.substring(6,7)
+    var c
+    if (b=='1')
+      c="1st Semester"
+    else if (b=='2')
+      c="2nd Semester"
+    else if(b=='3')
+      c="Summer"
+    else
+      c=""
+    return c + " SY "+a
   }
 
 

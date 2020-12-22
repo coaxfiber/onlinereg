@@ -17,6 +17,12 @@ import { UpdateRegComponent } from './update-reg/update-reg.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { SocialAuthService } from "angularx-social-login";
 import { FacebookLoginProvider, GoogleLoginProvider } from "angularx-social-login";
+import { ReportcardComponent } from './reportcard/reportcard.component';
+
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -61,21 +67,20 @@ export class AppComponent {
   login=undefined
   type=''
 
-  cet=true
+  cetsched:any=[]
   result=true
-
+  NewStudent = ''
   constructor(private authService: SocialAuthService,private _snackBar: MatSnackBar,private elRef:ElementRef,public dialog: MatDialog,private global: GlobalService,private http: Http){
     
     setTimeout(console.log.bind(console, '%cStop!', 'color: red;font-size:75px;font-weight:bold;-webkit-text-stroke: 1px black;'), 0);
     setTimeout(console.log.bind(console, '%cThis is a browser feature intended for developers.', 'color: black;font-size:20px;'), 0);
   	
-this.currentdate=new Date().getFullYear()
-for (var i = 0; i < 19; ++i) {
-  this.currdatearray[i] = this.currentdate--
-}
+    this.currentdate=new Date().getFullYear()+1
+    for (var i = 0; i < 19; ++i) {
+    this.currdatearray[i] = this.currentdate--
+    }
 
-
-this.googlelogin()
+this.loading=true
     this.http.get(this.global.api+'OnlineRegistration/ProgramLevel')
                      .map(response => response.json())
                      .subscribe(res => {
@@ -117,6 +122,13 @@ this.googlelogin()
                                              this.strandfiltered.push({strandId:'900013',strandTitle:'Science, Technology, Engineering and Mathematics Health Strand'})
                                              this.strandfiltered.push({strandId:'900010',strandTitle:'Science, Technology, Engineering and Mathematics-Non-Health Strand'})
                                              this.loading = false
+
+                                              if (sessionStorage.getItem("email")==null) {
+                                                this.googlelogin()
+                                              }else{
+                                                this.global.email= sessionStorage.getItem("email")
+                                                this.runupdate()
+                                              }
                                         },Error=>{
                                              this.global.swalAlertError()
                                             });
@@ -152,7 +164,7 @@ this.googlelogin()
   applicantNo=''
   googlelogin(): void {
         const dialogRef = this.dialog.open(LoginComponent, {
-          width: '500px', disableClose: true
+          width: '950px', disableClose: true
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -163,14 +175,14 @@ this.googlelogin()
       } 
 signOuttemp=0 
 signOut(): void {
+
+  sessionStorage.removeItem("email");
     if (this.signOuttemp==0) {
       this.signOuttemp=1
       this.authService.signOut();
       location.reload();
     }else
       location.reload();
-
-      window.location.replace('https://www.google.com/accounts/Logout')
   }
 openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, {
@@ -181,15 +193,17 @@ openSnackBar(message: string, action: string) {
 
 
 vars
+textsent=false
 runupdate(){
       this.login=false
-            this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.global.sy+'?emailAdd='+this.global.email)
+            this.http.get(this.global.api+'OnlineRegistration/Applicants/'+this.global.sy+'?emailAdd='+this.global.email)
                      .map(response => response.json())
                      .subscribe(res => {
                        this.login = true
                        this.type = 'reg'
                        if (res.data!=null||res.data!=undefined) {
                          if (res.data.length==1) {
+                           sessionStorage.setItem("email", this.global.email);
                            this.type = 'stat'
                            this.onedata = res.data[0]
                            this.applicantNo = this.onedata.applicantNo
@@ -216,7 +230,7 @@ runupdate(){
                           this.img=this.onedata.proofOfPayment
                           this.pdate=this.onedata.datePaid
                           this.remarks=this.onedata.remarks
-
+                          
                           this.vars={
                             "ProgramLevel": this.proglevelval,
                             "FirstName": this.fname.toUpperCase(),
@@ -240,11 +254,40 @@ runupdate(){
                             "SHS_PriorityStrandID2": this.strandval1,
                             "TopOfMyClass": this.condition
                           }
+                          this.placementdata=null
+                          if (res.data[0].idNumber!=null||res.data[0].idNumber!='') {
+                            //+res.data[0].idNumber
+                            this.http.get(this.global.api+'OnlineRegistration/'+res.data[0].idNumber,this.global.option)         
+                                  .map(response => response.json())
+                                  .subscribe(res => {
+                                   if (res.data!=null) {
+                                     this.textsent=res.data.testSchedSent
+                                     this.placementdata=res.data
+                                     this.cetsched = res.data
+                                     if (this.placementdata.examForSchoolYear==null) {
+                                       this.placementdata.examForSchoolYear=''
+                                     }
+                                   }
+
+                                   this.onedata.proofOfPayment=null
+                                    this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.global.sy+"/"+this.onedata.applicantNo)
+                                       .map(response => response.json())
+                                       .subscribe(res => {
+                                         this.onedata.proofOfPayment = res.data[0].proofOfPayment
+                                         this.onedata.reportCard = res.data[0].reportCard
+                                         console.log()
+                                       });
+                                   
+                                },err=>{
+                                  console.log(err)
+                                });
+                          }
+                           
                          }
                        }
                      });
 }
-
+  placementdata:any=null
   schoolstemp=[]
   keyDownFunction(){
       this.schoolstemp=[]
@@ -292,9 +335,12 @@ accept=false
     var pdate
     pdate = new Date(this.pdate).toLocaleString();
   	var x=''
-  	if (this.fname == '') {
-  		x=x+"*First name is required!<br>"
-  	}
+    if (this.fname == '') {
+      x=x+"*First name is required!<br>"
+    }
+    if (this.NewStudent == '') {
+      x=x+"*Please answer the question 'Have you been to USL before?'.<br>"
+    }
   	if (this.lname == '') {
   		x=x+"*Last name is required!<br>"
   	}
@@ -408,6 +454,12 @@ accept=false
       }else
         strandval1 = parseInt(this.strandval1)
 
+       var NewStudent
+       if (this.NewStudent=='true') {
+         NewStudent = true
+       }else
+         NewStudent = false
+
     	var option=this.global.requestToken()
     	this.http.post(this.global.api+'/OnlineRegistration/Applicant' ,{
         "ProgramLevel": this.proglevelval,
@@ -434,7 +486,8 @@ accept=false
         "SchoolYear": this.global.sy,
         "ProofOfPayment": this.img,
         "EmailAddress": this.global.email,
-        "DatePaid": this.pdate
+        "DatePaid": this.pdate,
+        "NewStudent": NewStudent
 			},option)
             .map(response => response.json())
             .subscribe(res => {
@@ -617,4 +670,99 @@ accept=false
       }
     }
   }
+
+
+  openreportcard(): void {
+    const dialogRef = this.dialog.open(ReportcardComponent, {
+      width: '750px', data:this.onedata,disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result!=undefined) {
+       this.onedata.reportCard=result.result
+      }
+
+    });
+  }
+
+
+  seeexpandend(){
+    if (this.onedata!=undefined) {
+      if (this.onedata.paymentVerified==0) {
+        return 1
+      }
+
+      if (this.onedata.paymentVerified==1) {
+        if (this.placementdata==null) {
+          return 2
+        }else{
+          if (this.placementdata.testSchedule!=null) {
+            if (this.placementdata.result=="F"||this.placementdata.result=="P"||this.placementdata.result=="R") {
+              return 5
+            }
+            return 4
+          }
+        }
+      }
+
+      if (this.onedata.paymentVerified==2) {
+        return 3
+      }
+    }else{
+      return 0
+    }
+  }
+
+
+   generatePDF(){
+   //place this block of codes inside a function
+      var SY = this.global.syDisplay(this.global.sy);
+
+
+       var headers = [
+              {text:'No.',bold:true},
+              {text:'IDNUMBER',bold:true,alignment:'center'},
+              {text:'NAME',bold:true,alignment:'center'},
+              {text:'GENDER',bold:true,alignment:'center'},
+              {text:'GRADE',bold:true,alignment:'center'},
+              {text:'REMARKS',bold:true,alignment:'center'},
+              ];
+          var tableData = [];
+          var res = [];
+          
+          res.push(headers);
+
+      var dd = {
+          pageSize:'LEGAL',
+        content: [
+          {text:'University of Saint Louis\nTuguegarao City, Cagayan\nFINAL GRADES\n\n',bold:true,fontSize:10,alignment:'center'},
+          {text:'*Grade Legend: D is Dropped; N is NFE; WP is for Withdrawn with Permission',italics:true,fontSize:7},
+          {
+              table:{
+                  headerRows: 1,
+                  pageBreak:'before',
+                  dontBreakRows: true,
+                  widths:[20,47,260,45,45,45],
+                  body:res,
+              },fontSize:9,
+              layout:{
+                        hLineWidth: function (i, node) { return 0.75; },
+                          vLineWidth: function (i, node) { return 0.75; },
+                          paddingTop: function(i, node) { return 1; },
+                          paddingBottom: function(i, node) { return 1; },
+                    }
+          },
+          {text:'\n'},
+          {text:'Checked by:\n\n\nName and Signature',fontSize:9}
+        ],
+        footer:function(currentPage, pageCount, pageSize) {
+            return [
+                {text:currentPage+' of '+pageCount,alignment:'right',fontSize:9,margin:[0,0,40,0]}
+            ]
+        }
+        
+      }
+      pdfMake.createPdf(dd).open();
+  }
 }
+

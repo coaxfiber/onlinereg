@@ -20,6 +20,7 @@ import {
   AmazonLoginProvider,
 } from 'angularx-social-login';
 import { UpdateRegComponent } from './update-reg/update-reg.component';
+import { ReportcardComponent } from './reportcard/reportcard.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,6 +30,7 @@ import { UpdateRegComponent } from './update-reg/update-reg.component';
     InputComponent,
     TermsComponent,
     UpdateRegComponent,
+    ReportcardComponent,
   ],
   entryComponents: [
     InputComponent,
@@ -36,6 +38,7 @@ import { UpdateRegComponent } from './update-reg/update-reg.component';
     InfoComponent,
     TermsComponent,
     UpdateRegComponent,
+    ReportcardComponent,
    ],
   imports: [
     BrowserModule,

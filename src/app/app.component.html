@@ -59,15 +59,20 @@
             <td valign="top"> Log out</td>
           </tr>
         </table>
-         
       </button>
     </div>
     <div style="height: 10px"></div>
-
   <div *ngIf="type=='reg'">
     <table style="width: 100%" *ngIf='loading==false'>
       <tr> 
         <td style="width: 100%;padding-left: 30px;padding-right: 30px;margin-top: -10px">
+        <div style="height: 5px"></div>
+        <mat-radio-group aria-label="Select an option"  [(ngModel)]="NewStudent">
+          Have you been admitted/enrolled in USL before?&nbsp;&nbsp;&nbsp;<mat-radio-button value="true">Yes</mat-radio-button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <mat-radio-button value="false">No</mat-radio-button>
+        </mat-radio-group>
+      <div style="height: 10px"></div>
           <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Select your Program Level</mat-label>
             <mat-select [(ngModel)]="proglevelval" (ngModelChange)='check()'>
@@ -126,7 +131,7 @@
     <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px">
          
           <mat-form-field appearance="outline" style="width: calc(35% - 10px);margin-right: 10px" class="fullwidth">
-            <mat-label>Gender</mat-label>
+            <mat-label>Sex</mat-label>
             <mat-select  [(ngModel)]="gender">
               <mat-option value="M">Male</mat-option>
               <mat-option value="F">Female</mat-option>
@@ -304,8 +309,8 @@
     </div>
 
     <div style="overflow: auto;" *ngIf="type=='stat'">
-  <div style="width: 62%;float: left;" class="fullwidth" >
-      <div style="padding: 20px;">
+  <div style="width: 60%;float: left;" class="fullwidth" >
+      <div style="padding: 20px 0px 20px 20px;">
       <h3 style="text-align: left;margin-top: 0px">Applicant Information:</h3>
       <table  id="customers"  *ngIf="vars!=undefined">
         <tr>
@@ -321,7 +326,7 @@
           <td style="width: calc(50% - 300px)">{{vars.DateOfBirth | date: 'mediumDate'}}</td>
         </tr>
         <tr>
-          <td>Gender:</td>
+          <td>Sex:</td>
           <td style="width: calc(50% - 300px)">{{vars.Gender}}</td>
         </tr>
         <tr>
@@ -374,21 +379,48 @@
       </table>
 
       </div>  
+      <p style="font-size: 12px;padding-right: 20px;padding-left: 25px;margin-top: 5px;margin-bottom: 5px">
+      Note: You can still update your information as long as the status of your registration is on process or not verified in this site. If you want to change your priority course during registration and after CET result is released, click <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1fT4sxxZ4mh35yLN4i-c6lGB9B_DgAK_sqQ6m62wjPfz95g/viewform" target="_blank">here</a>. 
+      </p>
+      &nbsp;<br>
 
-
+    <span *ngIf="placementdata!=null">
+    <button mat-raised-button color="primary" style="background-color: #3f51b5;color: white;margin-left: 20px" (click)="openprint()"  *ngIf="!(placementdata.result=='P')">
+      <span class="material-icons">
+      print
+    </span> View PDF</button>
+    </span>
+    <span *ngIf="placementdata==null">
     <button mat-raised-button color="primary" style="background-color: #3f51b5;color: white;margin-left: 20px" (click)="openprint()">
       <span class="material-icons">
       print
-    </span> View Print</button>
+    </span> View PDF</button>
+    </span>
     
-    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="openDialogUpdate(onedata)" *ngIf="onedata.paymentVerified!=2">
+
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="openDialogUpdate(onedata)" *ngIf="onedata.paymentVerified!=1">
       <span class="material-icons">
         edit
       </span> Update</button>
-      <div style="height: 15px"></div>
+
+
+
+
+       
+       <span *ngIf="placementdata!=null">
+       <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="generatePDF()" *ngIf="placementdata.result=='P'">
+      <span class="material-icons">
+        picture_as_pdf
+      </span> View Certificate</button>
+         <br><br>
+       </span>
+
+
+
+      <div style="height: 25px"></div>
     </div>
-  <div style="float: right; width: 36%;" class="fullwidth" >
-    <div style="padding: 20px 40px 40px 40px">
+  <div style="float: right; width: 40%;" class="fullwidth" >
+    <div style="padding: 20px 10px 40px 20px">
        <h3 style="text-align: left;margin-top: 0px">Registration Status</h3>
 
        <style type="text/css">
@@ -397,7 +429,7 @@
           padding-right: 9px;
          }
        </style>
-      <mat-expansion-panel style="width: 220px">
+      <mat-expansion-panel style="width: 280px" [expanded]="seeexpandend()==1">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -412,14 +444,14 @@
              </table>
           </mat-panel-title>
         </mat-expansion-panel-header>
-
-        Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!
-
+        <p style="margin: 0;">
+        Your registration is on process. Please wait for the Accounting office to verify your payment. Thank you!
+        </p>
       </mat-expansion-panel>
 
       <div style="height: 5px"></div>
 
-       <mat-expansion-panel style="width: 220px" *ngIf="onedata.paymentVerified==0">
+       <mat-expansion-panel style="width: 280px" *ngIf="onedata.paymentVerified==0"  [expanded]="seeexpandend()==2">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -436,9 +468,8 @@
 
       </mat-expansion-panel>
 
-      <div style="height: 5px"></div>
 
-       <mat-expansion-panel style="width: 220px" *ngIf="onedata.paymentVerified==1">
+       <mat-expansion-panel style="width: 280px" *ngIf="onedata.paymentVerified==1"  [expanded]="seeexpandend()==2">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -455,9 +486,7 @@
 
       </mat-expansion-panel>
 
-      <div style="height: 5px" *ngIf="onedata.paymentVerified==1"></div>
-
-       <mat-expansion-panel style="width: 220px" *ngIf="onedata.paymentVerified==2">
+       <mat-expansion-panel style="width: 280px" *ngIf="onedata.paymentVerified==2"  [expanded]="seeexpandend()==3">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -473,11 +502,14 @@
         {{onedata.remarksVerification}}
 
       </mat-expansion-panel>
-       
-      <div style="height: 5px" *ngIf="onedata.paymentVerified==2"></div>
+      <div style="height: 5px" ></div>
 
-       
-       <mat-expansion-panel style="width: 220px" *ngIf="cet">
+       <div *ngIf="placementdata!=null&&onedata.paymentVerified==1">
+       <mat-expansion-panel style="width: 280px"  
+       *ngIf="
+       placementdata.examForSchoolYear!=global.sy&&
+       placementdata.testSchedule!=null&&
+       placementdata.testSchedule!=''">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -493,10 +525,87 @@
         No CET Schedule Yet
 
       </mat-expansion-panel>
+      </div>
+       <div *ngIf="onedata.paymentVerified==0">
+       <mat-expansion-panel style="width: 280px" >
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/nocetsched.png" style="height: 40px">
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        No CET Schedule Yet
+
+      </mat-expansion-panel>
+      </div>
+
+      <div *ngIf="(placementdata==null||onedata.paymentVerified==2)&&onedata.paymentVerified!=0">
+       <mat-expansion-panel style="width: 280px">
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/nocetsched.png" style="height: 40px">
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        No CET Schedule Yet
+
+      </mat-expansion-panel>
+      </div>
+
+
+      <div *ngIf="onedata.paymentVerified==1&&placementdata!=null" >
+       <mat-expansion-panel style="width: 280px"  *ngIf="
+       cetsched.testSchedule!=null"  [expanded]="seeexpandend()==4">
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/cetsched.png" style="height: 40px">
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        Your exam schedule is on <b>{{cetsched.testSchedule}}</b>. Read instructions here: <b><a href="https://bit.ly/USL-CET-Instructions" target="_blank">https://bit.ly/USL-CET-Instructions</a></b>. Log in at <b><a href="https://usl-tuguegarao.neolms.com/" target="_blank">usl-tuguegarao.neolms.com</a></b>. Your user ID: (<b>{{cetsched.idNumber}}</b>) and password: 12345
+        <br><br>If you want to request for a change in the schedule of your USL-CET atleast three days prior to the next testing schedule:<br>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScImOeBv0yi9nUqIB9CmyfXUWTSgB2AnIpDEDToW0apc3Bhmg/viewform" target="_blank">USL-CET CHANGE OF SCHEDULE REQUEST FORM</a>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel style="width: 280px" *ngIf="cetsched.testSchedule==null">
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/nocetsched.png" style="height: 40px">
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        No CET Schedule Yet
+
+      </mat-expansion-panel>
+        </div>
 
       <div style="height: 5px"></div>
 
-      <mat-expansion-panel style="width: 220px" *ngIf="result">
+      <mat-expansion-panel style="width: 280px" *ngIf="placementdata==null">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -512,6 +621,78 @@
         No CET Result Yet
 
       </mat-expansion-panel>
+      <div *ngIf="placementdata!=null">
+      <mat-expansion-panel style="width: 280px"  *ngIf="!(placementdata.result=='P'||placementdata.result=='R'||placementdata.result=='F')">
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/nocetresult.png" style="height: 40px">
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        No CET Result Yet
+
+      </mat-expansion-panel>
+      </div>
+
+      <div *ngIf="placementdata!=null">
+      <mat-expansion-panel style="width: 280px" *ngIf="placementdata.result=='P'||placementdata.result=='R'||placementdata.result=='F'" [expanded]="seeexpandend()==5">
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/cetresult.png" style="height: 40px">
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngIf="placementdata.result=='P'"> Result:
+          <p style="font-size: 22px;margin-top: 0px;margin-bottom: 10px"> <b style="color: green" >Passed</b> </p>
+          Congratulations! You PASSED the USL-CET for {{getCourse(courseval)}}. Proceed now to online enrollment @ <a href="http://myportal.usl.edu.ph" target="_blank">http://myportal.usl.edu.ph</a><br> ID#: <b>{{placementdata.idNumber}}</b> <br>Password: <b>usl</b>
+        </div>
+        <div *ngIf="placementdata.result=='R'">
+          Result:
+          <p style="font-size: 22px;margin-top: 0px;margin-bottom: 10px"> <b style="color: blue" >Recommended</b> </p>
+           <div *ngIf="placementdata.gResult==''">
+              Louisian Greetings! Your admission is on a RECOMMENDED STATUS; Upload a clear copy of your report card.
+              <div style="height: 10px"></div>
+
+              <button mat-raised-button color="primary" style="background-color: #3f51b5;color: white;" (click)="openreportcard()">
+                <span class="material-icons">
+                backup
+              </span> Report card upload</button>
+              <div style="height: 10px"></div>
+              After Uploading your report card, Please wait for the USLGuidance SMS.
+          </div>
+          <div *ngIf="(placementdata.gResult!=placementdata.preferredCourseId)&&(placementdata.gResult!=''&&placementdata.gResult!=null)">
+             Your Scores and Grades are evaluated; your admission has been approved for <b>{{getCourse(placementdata.gResult)}}</b> Visit <a href="http://myportal.usl.edu.ph" target="_blank">http://myportal.usl.edu.ph</a> to enroll. Use ID# <b>{{placementdata.idNumber}}</b> as username and your default password: <b>usl</b>
+          </div>
+
+          <div *ngIf="placementdata.gResult==placementdata.preferredCourseId">
+             Louisian Greetings! Your Scores and Grades are evaluated; your admission has been approved. Visit <a href="http://myportal.usl.edu.ph" target="_blank">http://myportal.usl.edu.ph</a> to enroll. Use ID# <b>{{placementdata.idNumber}}</b> as username and your default password: <b>usl</b>
+          </div>
+        </div>
+        <div *ngIf="placementdata.result=='F'">
+          Result:
+          <p style="font-size: 22px;margin-top: 0px;margin-bottom: 10px"> <b style="color: red">Failed</b> </p>
+                   Louisian Greetings! We are sorry to inform you that you have not reached the minimum score to qualify for any course.
+        </div>
+        <br>
+        <span *ngIf="(placementdata.result=='R'&&placementdata.gResult!='')||placementdata.result=='P'">
+        If you want to change your priority course during registration:<br>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1fT4sxxZ4mh35yLN4i-c6lGB9B_DgAK_sqQ6m62wjPfz95g/viewform" target="_blank">USL-CET CHANGE OF PRIORITY COURSE REQUEST FORM</a>
+        </span>
+
+
+      </mat-expansion-panel>
+      </div>
 
 
     </div>

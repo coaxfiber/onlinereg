@@ -90,6 +90,12 @@ export class MainComponent implements OnInit {
     this.fullname = this.vars.LastName + ', ' + this.vars.FirstName + " " + this.vars.MiddleName +" " + this.vars.SuffixName
    
   }
+
+closethis(){
+  
+       this.dialogRef.close({result:'cancel'});
+}
+
 downloadAsPDF() {
     this.visible=false
     var data = document.getElementById('pdfTable');  //Id of the table
@@ -107,7 +113,6 @@ downloadAsPDF() {
       pdf.save('USLOnlineRegistration.pdf'); // Generated PDF   
     });  
         
-       this.dialogRef.close({result:'cancel'});
         
   }
 }

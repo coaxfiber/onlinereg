@@ -69,10 +69,9 @@
 		<td>{{strandp2}}</td>
 	</tr>
 </table>
-asdasdasd
 <div style="height: 10px"></div>
 <hr>
-<p *ngIf="vars.ProgramLevel=='05'">*NOTE: If you are the TOP 1 or TOP 2 of your batch, please secure a certification signed by your Principal and submit it to the High School Guidance Office. This will exempt you from taking the Entrance Test.</p>
+<p *ngIf="vars.ProgramLevel=='01'">*NOTE: If you are the TOP 1 or TOP 2 of your batch, please secure a certification signed by your Principal and submit it to the High School Guidance Office. This will exempt you from taking the Entrance Test.</p>
 <b>Please take note of the following:</b>
 <ol type="1">
 <li>You will receive a call or text from the Guidance Office to inform you of your test schedule.</li>
@@ -98,16 +97,23 @@ You will receive a confirmation text from USLGuidance of your successful registr
 <ol>
 
 <li>Actual date and time of your exam (Month/Day/Year 10:00AM-12:00PM)</li>
-<li>A link that will give you helpful instructions on how to log in and navigate the test module will be provided: <a href="http://bit.ly/USL-CET-Instructions">http://bit.ly/USL-CET-Instructions</a></li>
-<li>A Personal ID Number (21*****) and Password (12***) for you to log in the <a href="https://usl-tuguegarao.neolms.com/">https://usl-tuguegarao.neolms.com/</a> to take the test.</li>
+<li>A link that will give you helpful instructions on how to log in and navigate the test module will be provided: <a href="http://bit.ly/USL-CET-Instructions" target="_blank">http://bit.ly/USL-CET-Instructions</a></li>
+<li>A Personal ID Number (21*****) and Password (12***) for you to log in the <a href="https://usl-tuguegarao.neolms.com/" target="_blank">https://usl-tuguegarao.neolms.com/</a> to take the test.</li>
 
 </ol> 
 &nbsp;<br>
 &nbsp;<br>
-&nbsp;<br>
-&nbsp;<br> 
 </div>
 </div>     
   
 </div>
-<button mat-raised-button color="primary" style="width: calc(100% - 60px);margin: 20px 30px 5px 30px;font-size: 18px;height: 50px" (click)="downloadAsPDF()">Download and Close</button>
+&nbsp;<br>
+<button mat-raised-button color="primary" style="background-color: #B22222;color: white;margin-left: 20px" (click)="closethis()">
+      <span class="material-icons">
+      close
+    </span> Close</button>
+    
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="downloadAsPDF()">
+      <span class="material-icons">
+        edit
+      </span> Download</button>
