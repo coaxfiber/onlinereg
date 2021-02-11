@@ -273,7 +273,8 @@ var date
     		"RemarksVerification":  this.data.onedata.remarksVerification,
     		"ReportCard": this.data.onedata.reportCard,
     		"ReferenceNo": "",
-        "DatePaid": this.pdate
+        "DatePaid": this.pdate,
+        "PaymentType": 0,
 			},option)
             .map(response => response.json())
             .subscribe(res => {

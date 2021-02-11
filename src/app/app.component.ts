@@ -502,7 +502,8 @@ isNumeric(str) {
         "ProofOfPayment": this.img,
         "EmailAddress": this.global.email,
         "DatePaid": this.pdate,
-        "NewStudent": NewStudent
+        "NewStudent": NewStudent,
+        "PaymentType": 0,
 			},option)
             .map(response => response.json())
             .subscribe(res => {
