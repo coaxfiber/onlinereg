@@ -6,7 +6,7 @@ const swal = Swal;
 @Injectable()
 export class GlobalService {
 
-  api = "http://api.usl.edu.ph/api/";
+  api = "http://testserver.usl.edu.ph/api/";
   token
   header = new Headers();
   option:any;
