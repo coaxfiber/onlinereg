@@ -70,23 +70,42 @@ export class AppComponent {
   cetsched:any=[]
   result=true
   NewStudent = ''
+  yearnow=''
   constructor(private authService: SocialAuthService,private _snackBar: MatSnackBar,private elRef:ElementRef,public dialog: MatDialog,private global: GlobalService,private http: Http){
     
     setTimeout(console.log.bind(console, '%cStop!', 'color: red;font-size:75px;font-weight:bold;-webkit-text-stroke: 1px black;'), 0);
     setTimeout(console.log.bind(console, '%cThis is a browser feature intended for developers.', 'color: black;font-size:20px;'), 0);
-  	
-    this.currentdate=new Date().getFullYear()+1
-    for (var i = 0; i < 19; ++i) {
-    this.currdatearray[i] = this.currentdate--
-    }
-    console.log(this.isNumeric('0955555555a'))
-this.loading=true
+
+    this.http.get(this.global.api+'PublicAPI/CurrentServerTime',this.global.option)
+      .map(response => response.json())
+      .subscribe(res => {
+        var today:any = new Date(res.data);
+        var dd = String(today.getDate()-1).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = mm + '/' + dd + '/' + yyyy;
+        this.yearnow = yyyy.toString()
+        this.global.yearnow = yyyy.toString()
+        this.currentdate=yyyy+1
+        this.global.currentdate = yyyy+1
+          for (var i = 0; i < 40; ++i) {
+            this.currdatearray[i] = this.currentdate--
+          }
+
+        this.global.currdatearray = this.currdatearray
+      });
+  this.loading=true
     this.http.get(this.global.api+'OnlineRegistration/ProgramLevel')
                      .map(response => response.json())
                      .subscribe(res => {
                        this.proglevel=[]
                        for (var i = 0; i < res.data.length; ++i) {
-                         if (res.data[i].programLevel=="06") {
+                         if (res.data[i].programLevel=="06"||
+                             res.data[i].programLevel=="01"||
+                             res.data[i].programLevel=="02"||
+                             res.data[i].programLevel=="03"||
+                             res.data[i].programLevel=="04"||
+                             res.data[i].programLevel=="05") {
                            this.proglevel.push(res.data[i])
                          }
                        }
@@ -196,97 +215,110 @@ vars
 textsent=false
 runupdate(){
       this.login=false
-            this.http.get(this.global.api+'OnlineRegistration/Applicants/'+this.global.sy+'?emailAdd='+this.global.email)
-                     .map(response => response.json())
-                     .subscribe(res => {
-                       this.login = true
-                       this.type = 'reg'
-                       if (res.data!=null||res.data!=undefined) {
-                         if (res.data.length==1) {
-                           sessionStorage.setItem("email", this.global.email);
-                           this.type = 'stat'
-                           this.onedata = res.data[0]
-                           this.applicantNo = this.onedata.applicantNo
-                          this.proglevelval=this.onedata.programLevel
-                          this.fname=this.onedata.firstName
-                          this.mname=this.onedata.middleName
-                          this.lname=this.onedata.lastName
-                          this.suffix=this.onedata.suffixName
-                          this.bdate=this.onedata.dateOfBirth
-                          this.gender=this.onedata.gender
-                          this.cnumber=this.onedata.contactNumber
-                          this.cperson=this.onedata.contactPerson
-                          this.gradfrom=this.onedata.schoolGraduatedFrom
-                          this.collegestrandval=this.onedata.strandId
-                          this.courseval=this.onedata.preferredCourseID
-                          this.courseval1=this.onedata.alternativeCourseID1
-                          this.courseval2=this.onedata.alternativeCourseID2
-                          this.yeargrad=this.onedata.yearGraduated
-                          this.address=this.onedata.schoolAddressNoStreet
-                          this.permPSGC=this.onedata.schoolAddressPSGC
-                          this.strandval=this.onedata.shS_PriorityStrandID1
-                          this.strandval1=this.onedata.shS_PriorityStrandID2
-                          this.condition=this.onedata.topOfMyClass
-                          this.img=this.onedata.proofOfPayment
-                          this.pdate=this.onedata.datePaid
-                          this.remarks=this.onedata.remarks
-                          
-                          this.vars={
-                            "ProgramLevel": this.proglevelval,
-                            "FirstName": this.fname.toUpperCase(),
-                            "MiddleName": this.mname.toUpperCase(),
-                            "LastName": this.lname.toUpperCase(),
-                            "SuffixName": this.suffix.toUpperCase(),
-                            "DateOfBirth": this.bdate,
-                            "pdate": this.pdate,
-                            "Gender": this.gender,
-                            "ContactNumber": this.cnumber,
-                            "ContactPerson": this.cperson,
-                            "SchoolGraduatedFrom": this.gradfrom,
-                            "StrandId": this.collegestrandval,
-                            "PreferredCourseId": this.courseval,
-                            "AlternativeCourseId1": this.courseval1,
-                            "AlternativeCourseId2": this.courseval2,
-                            "YearGraduated": this.yeargrad,
-                            "SchoolAddressNoStreet": this.address,
-                            "SchoolAddressPSGC": this.permPSGC,
-                            "SHS_PriorityStrandID1": this.strandval,
-                            "SHS_PriorityStrandID2": this.strandval1,
-                            "TopOfMyClass": this.condition
-                          }
-                          this.placementdata=null
-                          if (res.data[0].idNumber!=null||res.data[0].idNumber!='') {
-                            //+res.data[0].idNumber
-                            this.http.get(this.global.api+'OnlineRegistration/'+res.data[0].idNumber,this.global.option)         
-                                  .map(response => response.json())
-                                  .subscribe(res => {
-                                   if (res.data!=null) {
-                                     this.textsent=res.data.testSchedSent
-                                     this.placementdata=res.data
-                                     this.cetsched = res.data
-                                     if (this.placementdata.examForSchoolYear==null) {
-                                       this.placementdata.examForSchoolYear=''
-                                     }
-                                   }
 
-                                   this.onedata.proofOfPayment=null
-                                    this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.global.sy+"/"+this.onedata.applicantNo)
-                                       .map(response => response.json())
-                                       .subscribe(res => {
-                                         this.onedata.proofOfPayment = res.data[0].proofOfPayment
-                                         this.onedata.reportCard = res.data[0].reportCard
-                                         console.log()
-                                       });
-                                   
-                                },err=>{
-                                  console.log(err)
-                                });
-                          }
-                           
-                         }
-                       }
-                     });
+      var sy = this.global.sy
+
+        if(this.global.sy.length == 7){
+          sy = this.global.sy.slice(0, -1) 
+        }
+        this.http.get(this.global.api+'OnlineRegistration/Applicants/'+sy+'?emailAdd='+this.global.email)
+           .map(response => response.json())
+           .subscribe(res => {
+             this.login = true
+             this.type = 'reg'
+             if (res.data!=null||res.data!=undefined) {
+
+               if (res.data.length==1) {
+                 this.runafterget(res)
+               }
+             }
+           },err=>{
+                 this.global.swalAlertError()
+            });
 }
+
+runafterget(res){
+     sessionStorage.setItem("email", this.global.email);
+     this.type = 'stat'
+     this.onedata = res.data[0]
+     this.applicantNo = this.onedata.applicantNo
+      this.proglevelval=this.onedata.programLevel
+      this.fname=this.onedata.firstName
+      this.mname=this.onedata.middleName
+      this.lname=this.onedata.lastName
+      this.suffix=this.onedata.suffixName
+      this.bdate=this.onedata.dateOfBirth
+      this.gender=this.onedata.gender
+      this.cnumber=this.onedata.contactNumber
+      this.cperson=this.onedata.contactPerson
+      this.gradfrom=this.onedata.schoolGraduatedFrom
+      this.collegestrandval=this.onedata.strandId
+      this.courseval=this.onedata.preferredCourseID
+      this.courseval1=this.onedata.alternativeCourseID1
+      this.courseval2=this.onedata.alternativeCourseID2
+      this.yeargrad=this.onedata.yearGraduated
+      this.address=this.onedata.schoolAddressNoStreet
+      this.permPSGC=this.onedata.schoolAddressPSGC
+      this.strandval=this.onedata.shS_PriorityStrandID1
+      this.strandval1=this.onedata.shS_PriorityStrandID2
+      this.condition=this.onedata.topOfMyClass
+      this.img=this.onedata.proofOfPayment
+      this.pdate=this.onedata.datePaid
+      this.remarks=this.onedata.remarks
+      this.vars={
+        "ProgramLevel": this.proglevelval,
+        "FirstName": this.fname.toUpperCase(),
+        "MiddleName": this.mname.toUpperCase(),
+        "LastName": this.lname.toUpperCase(),
+        "SuffixName": this.suffix.toUpperCase(),
+        "DateOfBirth": this.bdate,
+        "pdate": this.pdate,
+        "Gender": this.gender,
+        "ContactNumber": this.cnumber,
+        "ContactPerson": this.cperson,
+        "SchoolGraduatedFrom": this.gradfrom,
+        "StrandId": this.collegestrandval,
+        "PreferredCourseId": this.courseval,
+        "AlternativeCourseId1": this.courseval1,
+        "AlternativeCourseId2": this.courseval2,
+        "YearGraduated": this.yeargrad,
+        "SchoolAddressNoStreet": this.address,
+        "SchoolAddressPSGC": this.permPSGC,
+        "SHS_PriorityStrandID1": this.strandval,
+        "SHS_PriorityStrandID2": this.strandval1,
+        "TopOfMyClass": this.condition
+      }
+      this.placementdata=null
+      if (res.data[0].idNumber!=null||res.data[0].idNumber!='') {
+        //+res.data[0].idNumber
+        this.http.get(this.global.api+'OnlineRegistration/'+res.data[0].idNumber,this.global.option)         
+              .map(response => response.json())
+              .subscribe(res => {
+               if (res.data!=null) {
+                 this.textsent=res.data.testSchedSent
+                 this.placementdata=res.data
+                 this.cetsched = res.data
+                 if (this.placementdata.examForSchoolYear==null) {
+                   this.placementdata.examForSchoolYear=''
+                 }
+               }
+
+               this.onedata.proofOfPayment=null
+                this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.onedata.schoolYear+"/"+this.onedata.applicantNo)
+                   .map(response => response.json())
+                   .subscribe(res => {
+                     if(res.data.length>0){
+                       this.onedata.proofOfPayment = res.data[0].proofOfPayment
+                       this.onedata.reportCard = res.data[0].reportCard                       
+                     }
+                   });
+               
+            },err=>{
+               this.global.swalAlertError()
+            });
+      }
+}
+
   placementdata:any=null
   schoolstemp=[]
   keyDownFunction(){
@@ -303,7 +335,7 @@ runupdate(){
     
   }
   getAge(dateString) {
-    var today = new Date("october 31, 2020");
+    var today = new Date("October 31, 2021");
     var birthDate = new Date(dateString);
     var age = today.getFullYear() - birthDate.getFullYear();
     var m = today.getMonth() - birthDate.getMonth();
@@ -315,6 +347,9 @@ runupdate(){
   check(){
      if (this.proglevelval=='01'||this.proglevelval=='02'||this.proglevelval=='04'||this.proglevelval=='05') {
       this.condition = false
+      if(this.global.sy.length == 7){
+        this.global.sy.slice(0, -1) 
+      }
     }else
       this.condition = true
 
@@ -336,10 +371,22 @@ isNumeric(str) {
          !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
   register(){
+    this.global.swalLoading('')
     var date
     var pdate
     pdate = new Date(this.pdate).toLocaleString();
   	var x=''
+    var gradcheck = true
+    console.log(this.schools)
+    for (var i2 = 0; i2 < this.schools.length; ++i2) {
+     if(this.gradfrom==this.schools[i2].companyName){
+       gradcheck=false
+       break
+     }
+    }
+    if (gradcheck) {
+      x=x+"*School Graduated from must be selected!<br>"
+    }
     if (this.fname == '') {
       x=x+"*First name is required!<br>"
     }
@@ -474,7 +521,13 @@ isNumeric(str) {
          NewStudent = true
        }else
          NewStudent = false
+      var sy = this.global.sy
 
+      if (this.proglevelval=='01'||this.proglevelval=='02'||this.proglevelval=='04'||this.proglevelval=='05') {
+        if(this.global.sy.length == 7){
+          sy = this.global.sy.slice(0, -1) 
+        }
+      }
     	var option=this.global.requestToken()
     	this.http.post(this.global.api+'/OnlineRegistration/Applicant' ,{
         "ProgramLevel": this.proglevelval,
@@ -498,7 +551,7 @@ isNumeric(str) {
         "SHS_PriorityStrandID2": this.strandval1,
         "TopOfMyClass": this.condition,
         "Remark": "",
-        "SchoolYear": this.global.sy,
+        "SchoolYear": sy,
         "ProofOfPayment": this.img,
         "EmailAddress": this.global.email,
         "DatePaid": this.pdate,
@@ -507,6 +560,7 @@ isNumeric(str) {
 			},option)
             .map(response => response.json())
             .subscribe(res => {
+              this.global.swalClose()
               this.vars = {
                       "ProgramLevel": this.proglevelval,
                       "FirstName": this.fname.toUpperCase(),

@@ -12,6 +12,10 @@ export class GlobalService {
   option:any;
   email=''
   sy='2021221'
+
+  yearnow=''
+  currdatearray=[]
+  currentdate=0
   constructor() {
      
   }

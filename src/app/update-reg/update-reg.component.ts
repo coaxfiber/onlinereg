@@ -50,10 +50,8 @@ export class UpdateRegComponent implements OnInit {
   strand=[]
   ngOnInit() {
 
-this.currentdate=new Date().getFullYear()
-for (var i = 0; i < 19; ++i) {
-  this.currdatearray[i] = this.currentdate--
-}
+this.currentdate=this.global.currentdate
+this.currdatearray=this.global.currdatearray
      this.strand=this.data.strand
      this.proglevel=this.data.proglevel
 	  this.schools=this.data.schools
@@ -243,6 +241,15 @@ var date
         strandval1 = parseInt(this.strandval1)
         this.global.swalLoading("")
     	var option=this.global.requestToken()
+
+
+      var sy = this.global.sy
+
+      if (this.proglevelval=='01'||this.proglevelval=='02'||this.proglevelval=='04'||this.proglevelval=='05') {
+        if(this.global.sy.length == 7){
+          sy = this.global.sy.slice(0, -1) 
+        }
+      }
      	this.http.put(this.global.api+'OnlineRegistration/Applicant/'+ this.data.onedata.applicantNo,
     	{
         "ProgramLevel": this.proglevelval,
@@ -266,7 +273,7 @@ var date
         "SHS_PriorityStrandID2": this.strandval1,
         "TopOfMyClass": this.condition,
         "Remark": this.data.onedata.remarks,
-        "SchoolYear": this.global.sy,
+        "SchoolYear": sy,
         "ProofOfPayment": this.img,
         "EmailAddress": this.global.email,
         "PaymentVerified": 0,
@@ -303,7 +310,7 @@ var date
       } 
 
   getAge(dateString) {
-    var today = new Date("october 31, 2020");
+    var today = new Date("october 31, "+this.global.yearnow);
     var birthDate = new Date(dateString);
     var age = today.getFullYear() - birthDate.getFullYear();
     var m = today.getMonth() - birthDate.getMonth();

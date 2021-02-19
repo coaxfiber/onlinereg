@@ -32,8 +32,11 @@
 <mat-card style="max-width: 800px;margin: 25px auto;background-color: #f2f3f7;" id="boxx" *ngIf="login==false">
   <mat-progress-bar mode="indeterminate" style="margin: 50px 20px 20px 20px;width: calc(100% - 40px)"></mat-progress-bar>
 </mat-card>
-<mat-card style="max-width: 800px;margin: 25px auto;background-color: #f2f3f7;" id="boxx" *ngIf="login">
-   <p style="font-size: 25px;padding-top: 30px;padding-bottom: 5px;text-align: center;">USL Online Registration</p>
+<mat-card style="max-width: 800px;margin: 25px auto;background-color: #f2f3f7;border-radius: 10px;overflow: hidden;bo" id="boxx" *ngIf="login">
+   <p style="font-size: 25px;padding-top:15px;padding-bottom: 15px;text-align: center;background: #294a70;color:white;margin-bottom: 0">USL Online Registration for <b>{{global.syDisplay(global.sy)}}</b></p>
+   <div style="height: 5px;
+    background-color: #ffab1f;"></div>
+    <div style="height: 25px"></div>
 
 <style type="text/css">
   @media only screen and (max-width: 800px) {
@@ -47,7 +50,7 @@
 }
 </style>
 
-    <mat-progress-bar mode="indeterminate" style="margin: 50px 20px 20px 20px;width: calc(100% - 40px)"  *ngIf='loading'></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate" style="margin: 25px 20px 20px 20px;width: calc(100% - 40px)"  *ngIf='loading'></mat-progress-bar>
     <p style="text-align: center; padding-bottom: 50px"  *ngIf='loading'>Loading Data...</p>
 
     <div  *ngIf='loading==false' style="padding-right: 30px;padding-left: 30px;">
@@ -66,12 +69,7 @@
     <table style="width: 100%" *ngIf='loading==false'>
       <tr> 
         <td style="width: 100%;padding-left: 30px;padding-right: 30px;margin-top: -10px">
-        <div style="height: 5px"></div>
-        <mat-radio-group aria-label="Select an option"  [(ngModel)]="NewStudent">
-          Have you been admitted/enrolled in USL before?&nbsp;&nbsp;&nbsp;<mat-radio-button value="true">Yes</mat-radio-button>
-          &nbsp;&nbsp;&nbsp;&nbsp;
-          <mat-radio-button value="false">No</mat-radio-button>
-        </mat-radio-group>
+        
       <div style="height: 10px"></div>
           <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Select your Program Level</mat-label>
@@ -85,11 +83,11 @@
 
 
     <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='01'">
-      <mat-checkbox  [(ngModel)]="condition" >The child must be 4 years old</mat-checkbox> by October 31, 2020.
+      <mat-checkbox  [(ngModel)]="condition" >The child must be 4 years old</mat-checkbox> by October 31, {{yearnow}}.
     </p>
 
     <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='02'">
-      <mat-checkbox  [(ngModel)]="condition">The child must be 5 years old</mat-checkbox> by October 31, 2020.
+      <mat-checkbox  [(ngModel)]="condition">The child must be 5 years old</mat-checkbox> by October 31, {{yearnow}}.
     </p>
 
     <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='04'">
@@ -127,7 +125,13 @@
               <input matInput placeholder="" [(ngModel)]="suffix" autocomplete="off">
           </mat-form-field>
     </div>
-
+    <div *ngIf="proglevelval=='03'||proglevelval=='04'||proglevelval=='05'||proglevelval=='06'||proglevelval=='07'" style="margin-left: 35px;margin-top: -10px;margin-right: 30px;margin-bottom: 20px ">
+        <mat-radio-group aria-label="Select an option"  [(ngModel)]="NewStudent">
+          Have you been admitted/enrolled in USL before?&nbsp;&nbsp;&nbsp;<mat-radio-button value="true">Yes</mat-radio-button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <mat-radio-button value="false">No</mat-radio-button>
+        </mat-radio-group>
+    </div>
     <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px">
          
           <mat-form-field appearance="outline" style="width: calc(35% - 10px);margin-right: 10px" class="fullwidth">
@@ -379,18 +383,21 @@
       </table>
 
       </div>  
+      <div>  
       <p style="font-size: 12px;padding-right: 20px;padding-left: 25px;margin-top: 5px;margin-bottom: 5px">
-      Note: You can still update your information as long as the status of your registration is on process or not verified in this site. If you want to change your priority course during registration and after CET result is released, click <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1fT4sxxZ4mh35yLN4i-c6lGB9B_DgAK_sqQ6m62wjPfz95g/viewform" target="_blank">here</a>. 
+      Note: You can still update your information as long as the status of your registration is on process or not verified in this site. <span   *ngIf="proglevelval=='06'">If you want to change your priority course during registration and after CET result is released, click <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1fT4sxxZ4mh35yLN4i-c6lGB9B_DgAK_sqQ6m62wjPfz95g/viewform" target="_blank">here</a>. </span>
       </p>
       &nbsp;<br>
+      </div>  
 
-    <span *ngIf="placementdata!=null">
+
+    <span *ngIf="placementdata!=null&&proglevelval=='06'">
     <button mat-raised-button color="primary" style="background-color: #3f51b5;color: white;margin-left: 20px" (click)="openprint()"  *ngIf="!(placementdata.result=='P')">
       <span class="material-icons">
       print
     </span> View PDF</button>
     </span>
-    <span *ngIf="placementdata==null">
+    <span *ngIf="placementdata==null&&proglevelval=='06'">
     <button mat-raised-button color="primary" style="background-color: #3f51b5;color: white;margin-left: 20px" (click)="openprint()">
       <span class="material-icons">
       print
@@ -398,7 +405,7 @@
     </span>
     
 
-    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="openDialogUpdate(onedata)" *ngIf="onedata.paymentVerified!=1">
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px;margin-bottom: 20px" (click)="openDialogUpdate(onedata)" *ngIf="onedata.paymentVerified!=1">
       <span class="material-icons">
         edit
       </span> Update</button>
@@ -421,7 +428,8 @@
     </div>
   <div style="float: right; width: 40%;" class="fullwidth" >
     <div style="padding: 20px 10px 40px 20px">
-       <h3 style="text-align: left;margin-top: 0px">Registration Status</h3>
+       <h3 style="text-align: left;margin-top: 0px">Registration Status
+</h3>
 
        <style type="text/css">
          .mat-expansion-panel-header{
@@ -450,7 +458,7 @@
       </mat-expansion-panel>
 
       <div style="height: 5px"></div>
-
+      <div>
        <mat-expansion-panel style="width: 280px" *ngIf="onedata.paymentVerified==0"  [expanded]="seeexpandend()==2">
        <mat-expansion-panel-header>
           <mat-panel-title>
@@ -463,8 +471,7 @@
              </table>
           </mat-panel-title>
         </mat-expansion-panel-header>
-
-        Your Registration is still on process.
+        Your registration is still on process.
 
       </mat-expansion-panel>
 
@@ -482,8 +489,34 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
 
-        Your Registration is Verified. Please wait for the text message or check this site for your exam schedule.
-
+        <div *ngIf="proglevelval=='06'">
+          Your registration is verified. Please wait for the text message or check this site for your exam schedule.
+        </div>
+        <div *ngIf="proglevelval=='01'||proglevelval=='02'||proglevelval=='03'">
+          Your registration is verified. 
+          <br><br>
+          Parent/Guardian is requested to submit the following requirements through <a href="mailto:uslelemGO@gmail.com">uslelemGO@gmail.com</a>:
+         <br><br>
+            <div *ngIf="proglevelval=='01'||proglevelval=='02'">
+              <u>Pre-school and Kindergarten Pupils</u>:
+              <ul><li>PSA Birth Certificate</li></ul>
+            </div>
+            <div *ngIf="proglevelval=='03'">
+              <u>Transferees for Grade 1</u>:
+              <ul>
+                <li>PSA Birth Certificate</li>
+                <li>Report card with LRN number</li>
+              </ul>
+            </div>
+            <div *ngIf="proglevelval=='03'">
+              <u>Transferees for Grade 2-6</u>:
+              <ul>
+                <li>PSA Birth Certificate</li>
+                <li>Report card with general average of 85% or above (to submit after the 4<sup>th</sup> grading period)</li>
+              </ul>
+            </div>
+          When complete requirements are submitted, wait 2-3 days for the confirmation text of exam schedule and requirements needed for online exam.
+        </div>
       </mat-expansion-panel>
 
        <mat-expansion-panel style="width: 280px" *ngIf="onedata.paymentVerified==2"  [expanded]="seeexpandend()==3">
@@ -498,13 +531,14 @@
              </table>
           </mat-panel-title>
         </mat-expansion-panel-header>
-
+        <b>Reupload payment receipt:</b><br>
         {{onedata.remarksVerification}}
 
       </mat-expansion-panel>
+      </div>
       <div style="height: 5px" ></div>
 
-       <div *ngIf="placementdata!=null&&onedata.paymentVerified==1">
+       <div *ngIf="placementdata!=null&&onedata.paymentVerified==1&&proglevelval=='06'&&!(onedata.paymentVerified==1&&placementdata!=null&&proglevelval=='06')">
        <mat-expansion-panel style="width: 280px"  
        *ngIf="
        placementdata.examForSchoolYear!=global.sy&&
@@ -526,7 +560,7 @@
 
       </mat-expansion-panel>
       </div>
-       <div *ngIf="onedata.paymentVerified==0">
+       <div *ngIf="onedata.paymentVerified==0&&proglevelval=='06'&&!(onedata.paymentVerified==1&&placementdata!=null&&proglevelval=='06')">
        <mat-expansion-panel style="width: 280px" >
        <mat-expansion-panel-header>
           <mat-panel-title>
@@ -545,7 +579,7 @@
       </mat-expansion-panel>
       </div>
 
-      <div *ngIf="(placementdata==null||onedata.paymentVerified==2)&&onedata.paymentVerified!=0">
+      <div *ngIf="(placementdata==null||onedata.paymentVerified==2)&&onedata.paymentVerified!=0&&proglevelval=='06'&&!(onedata.paymentVerified==1&&placementdata!=null&&proglevelval=='06')">
        <mat-expansion-panel style="width: 280px">
        <mat-expansion-panel-header>
           <mat-panel-title>
@@ -565,7 +599,7 @@
       </div>
 
 
-      <div *ngIf="onedata.paymentVerified==1&&placementdata!=null" >
+      <div *ngIf="onedata.paymentVerified==1&&placementdata!=null&&proglevelval=='06'" >
        <mat-expansion-panel style="width: 280px"  *ngIf="
        cetsched.testSchedule!=null"  [expanded]="seeexpandend()==4">
        <mat-expansion-panel-header>
@@ -605,7 +639,7 @@
 
       <div style="height: 5px"></div>
 
-      <mat-expansion-panel style="width: 280px" *ngIf="placementdata==null">
+      <mat-expansion-panel style="width: 280px" *ngIf="placementdata==null&&proglevelval=='06'">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -621,7 +655,7 @@
         No CET Result Yet
 
       </mat-expansion-panel>
-      <div *ngIf="placementdata!=null">
+      <div *ngIf="placementdata!=null&&proglevelval=='06'">
       <mat-expansion-panel style="width: 280px"  *ngIf="!(placementdata.result=='P'||placementdata.result=='R'||placementdata.result=='F')">
        <mat-expansion-panel-header>
           <mat-panel-title>
@@ -640,7 +674,7 @@
       </mat-expansion-panel>
       </div>
 
-      <div *ngIf="placementdata!=null">
+      <div *ngIf="placementdata!=null&&proglevelval=='06'">
       <mat-expansion-panel style="width: 280px" *ngIf="placementdata.result=='P'||placementdata.result=='R'||placementdata.result=='F'" [expanded]="seeexpandend()==5">
        <mat-expansion-panel-header>
           <mat-panel-title>
