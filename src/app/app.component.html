@@ -33,7 +33,14 @@
   <mat-progress-bar mode="indeterminate" style="margin: 50px 20px 20px 20px;width: calc(100% - 40px)"></mat-progress-bar>
 </mat-card>
 <mat-card style="max-width: 800px;margin: 25px auto;background-color: #f2f3f7;border-radius: 10px;overflow: hidden;bo" id="boxx" *ngIf="login">
-   <p style="font-size: 25px;padding-top:15px;padding-bottom: 15px;text-align: center;background: #294a70;color:white;margin-bottom: 0">USL Online Registration for <b>{{global.syDisplay(global.sy)}}</b></p>
+   <p style="font-size: 25px;padding-top:15px;padding-bottom: 15px;text-align: center;background: #294a70;color:white;margin-bottom: 0"  *ngIf='proglevelval==""'>USL Online Registration for <b>{{global.syDisplay(global.sy,1)}}</b></p>
+   <p style="font-size: 25px;padding-top:15px;padding-bottom: 15px;text-align: center;background: #294a70;color:white;margin-bottom: 0"  *ngIf='proglevelval=="06"||proglevelval=="07"'>USL Online Registration for <b>{{global.syDisplay(global.sy)}}</b></p>
+
+   <p style="font-size: 25px;padding-top:15px;padding-bottom: 15px;text-align: center;background: #294a70;color:white;margin-bottom: 0"  *ngIf='!(proglevelval==""||proglevelval=="06"||proglevelval=="07")&&(!(orfor=="2"&&proglevelval=="05")&&paymentType==0)'>USL Online Registration for <b>{{global.syDisplay(global.sy,1)}}</b></p>
+
+   <p style="font-size: 25px;padding-top:15px;padding-bottom: 15px;text-align: center;background: #294a70;color:white;margin-bottom: 0"  *ngIf='!(proglevelval==""||proglevelval=="06"||proglevelval=="07")&&(orfor=="2"&&proglevelval=="05"||paymentType==1)'>USL Pre-enrollment for <b>{{global.syDisplay(global.sy,1)}}</b></p>
+
+   
    <div style="height: 5px;
     background-color: #ffab1f;"></div>
     <div style="height: 25px"></div>
@@ -94,11 +101,35 @@
       <mat-checkbox  [(ngModel)]="condition">You must have a </mat-checkbox> general weighted average of at least 80%.
     </p>
 
-    <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='05'">
+    <div style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='05'">
+    
+    <table style="width: 100%" >
+      <tr>
+        <td style="width: 170px"> Online Registration for: </td>
+        <td>
+          <select class="select-css"   [(ngModel)]="orfor">
+            <option value="">- Select -</option>
+            <option value="1" *ngIf="checksettings('SHS')">Entrance Exam</option>
+            <option value="2" *ngIf="checksettings('Other_SHSPreReg')">Pre-Enrollment (Incoming Grade 11)</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="padding: 10px;">
+          <!-- <span style="font-size: 13px"  *ngIf="orfor=='1'">Note: For Entrance Examination!</span>
+          <span style="font-size: 13px"  *ngIf="orfor=='2'">Note: For Pre enrollment of grade 11 in science high etc.!</span> -->
+        </td>
+      </tr>
+    </table>
+
+    </div>
+
+    <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='05'&&orfor=='1'">
       <mat-checkbox  [(ngModel)]="condition" >You must have a </mat-checkbox> general weighted average of at least 80% with no failing grades in any of the grading periods.
     </p>
     <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 48px;padding-right: 30px;font-size: 16px" *ngIf="(proglevelval=='01'||proglevelval=='02'||proglevelval=='03')&&condition"><b>Please provide child information and click register.</b></p>
-    <div *ngIf="proglevelval!=''&&condition">
+    <div *ngIf="proglevelval!=''&&(condition||(proglevelval=='05'&&orfor=='2'))">
     <div *ngIf="proglevelval!=''&&loading==false">
     <table style="width: 100%;margin-top: -15px">
       <tr>
@@ -219,14 +250,13 @@
     <div *ngIf="proglevelval=='05'">
       <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px">
             <mat-form-field appearance="outline" style="width: calc(100% - 10px);margin-right: 10px" class="fullwidth">
-              <mat-label>Select Strand Priority 1</mat-label>
+              <mat-label>Select Strand Priority</mat-label>
               <mat-select [(ngModel)]="strandval">
                 <mat-option *ngFor="let a of strandfiltered" value="{{a.strandId}}">{{a.strandTitle}}</mat-option>
               </mat-select>
             </mat-form-field>
       </div>
-      <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px">
-           
+      <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px"  *ngIf="(proglevelval=='05'&&orfor=='1')" >
             <mat-form-field appearance="outline" style="width: calc(100% - 10px);margin-right: 10px" class="fullwidth">
               <mat-label>Select Strand Priority 2</mat-label>
               <mat-select [(ngModel)]="strandval1">
@@ -234,7 +264,7 @@
               </mat-select>
             </mat-form-field>
       </div>
-      <p style="padding-left: 45px;padding-right: 30px;margin-top: -10px;margin-bottom: 25px"><a href="#">Learn more</a> about Academic Tracks.</p>
+      <!-- <p style="padding-left: 45px;padding-right: 30px;margin-top: -10px;margin-bottom: 25px"><a href="#">Learn more</a> about Academic Tracks.</p> -->
     </div>
 
     <div *ngIf="proglevelval=='06'">
@@ -281,20 +311,20 @@
           </mat-form-field>
     </div>    
     </div>
-    <div  *ngIf="proglevelval!=''&&loading==false" style="padding-left: 30px;clear: both">
-          <div style="float: left;width: 40%"  class="fullwidth">
+    <div  *ngIf="(proglevelval=='05'&&orfor=='2')" style="padding-left: 30px;clear: both">
+          <div  class="fullwidth">
             <div style="height: 5px"></div>
-              Upload Proof of Payment:<br>
+              Upload Principal's Certification:<br>
               <input mat-raised-button type="file" id="avatar" (change)="onFileChange($event)" #fileInput class="inputfile" style="margin-top: 10px;margin-bottom: 5px"/>
           </div>
-          <div style="float: left;width: 50%;"  class="fullwidth">
+          <!-- <div style="float: left;width: 50%;"  class="fullwidth">
            <mat-form-field appearance="outline"  style="width: calc(90% - 20px);float: left;">
                   <mat-label>Date of Payment</mat-label>
               <input readonly matInput [matDatepicker]="picker2" placeholder="Payment Date" (click)="picker2.open()"  [(ngModel)]="pdate" name="pdate">
               <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
               <mat-datepicker #picker2></mat-datepicker>
             </mat-form-field>
-          </div>
+          </div> -->
 
 
               <img [src]='attachment'  *ngIf='attachment!=""' style="width:calc(100% - 30px)" />
@@ -317,7 +347,10 @@
       <div style="padding: 20px 0px 20px 20px;">
       <h3 style="text-align: left;margin-top: 0px">Applicant Information:</h3>
       <table  id="customers"  *ngIf="vars!=undefined">
-        <tr>
+        <!-- <tr>
+          <th width="200px">Applicant No: </th>
+          <th><b style="font-size: 20px;">{{onedata.applicantNo}}</b></th>
+        </tr> --><tr>
           <td width="200px">ProgramLevel: </td>
           <td>{{getproglevelval(proglevelval)}}</td>
         </tr>
@@ -345,10 +378,10 @@
           <td>Contact Person:</td>
           <td>{{vars.ContactPerson}}</td>
         </tr>
-        <tr>
+        <!-- <tr>
           <td>Date of Payment:</td>
           <td>{{vars.pdate | date: 'mediumDate'}}</td>
-        </tr>
+        </tr> -->
         <tr *ngIf="vars.ProgramLevel=='04'||vars.ProgramLevel=='05'||vars.ProgramLevel=='06'||vars.ProgramLevel=='07'">
           <td>School Graduated From: </td>
           <td>{{vars.SchoolGraduatedFrom}}</td>
@@ -373,20 +406,38 @@
           <td>{{getCourse(courseval2)}}</td>
         </tr>
         <tr *ngIf="vars.ProgramLevel=='05'">
-          <td>Strand Priority 1: </td>
-          <td>{{strandp1}}</td>
+          <td>Strand Priority</td>
+          <td>{{getstrandfiltered(strandval)}}</td>
         </tr>
-        <tr *ngIf="vars.ProgramLevel=='05'">
+        <tr *ngIf="vars.ProgramLevel=='05'&&paymentType==0">
           <td>Strand Priority 2: </td>
-          <td>{{strandp2}}</td>
+          <td>{{getstrandfiltered(strandval1)}}</td>
         </tr>
       </table>
 
       </div>  
       <div>  
+        <p style="padding-right: 20px;padding-left: 25px;" *ngIf="paymentType==0">
+          <span style="font-size: 20px;
+          background-color: #294a70;color:white;padding: 10px;border-radius: 15px
+          ">Applicant No: <b>{{getapplicantno(onedata.applicantNo)}}</b></span><br><br>
+          <span style="font-size: 12px;">Please use this Applicant No. as your <b>TEMPORARY ID NO.</b> when paying your entrance test fee. Click here for <a href="https://drive.google.com/file/d/129oe8zIRBC5V4cb39AlKti8Zeu2D0qnT/view" target="_blank">payment instructions</a>.<br> <br> 
+          After payment has been made, please upload a clear copy of your receipt thru this site and wait for the confirmation text from the Guidance Office regarding your entrance test schedule.<br><br> 
+          Thank you.</span>
+        </p>
       <p style="font-size: 12px;padding-right: 20px;padding-left: 25px;margin-top: 5px;margin-bottom: 5px">
       Note: You can still update your information as long as the status of your registration is on process or not verified in this site. <span   *ngIf="proglevelval=='06'">If you want to change your priority course during registration and after CET result is released, click <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1fT4sxxZ4mh35yLN4i-c6lGB9B_DgAK_sqQ6m62wjPfz95g/viewform" target="_blank">here</a>. </span>
       </p>
+      <p  style="font-size: 12px;padding-right: 20px;padding-left: 25px;margin-top: 10px;margin-bottom: 5px">
+         For inquiries, you may call or text:
+      </p>
+      <ul  style="font-size: 12px;padding-right: 20px;padding-left: 50px;margin-top: 8px;margin-bottom: 5px">
+        <li *ngIf="proglevelval=='05'">09563078726 (Senior High School helpline number).</li>
+        <li *ngIf="proglevelval=='01'||proglevelval=='02'||proglevelval=='03'">09563078717 (Elementary helpline number).</li>
+        <li *ngIf="proglevelval=='04'">09053085090 (Junior High School helpline number).</li>
+        <li *ngIf="proglevelval=='06'">09563078723 (College helpline number).</li>
+        <li>09563078603 (Accounting helpline number).</li>
+      </ul>
       &nbsp;<br>
       </div>  
 
@@ -405,39 +456,279 @@
     </span>
     
 
-    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px;margin-bottom: 20px" (click)="openDialogUpdate(onedata)" *ngIf="onedata.paymentVerified!=1">
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 0px;margin-bottom: 20px" (click)="openDialogUpdate(onedata,1)" *ngIf="onedata.paymentVerified!=1">
       <span class="material-icons">
         edit
-      </span> Update</button>
+      </span> Details</button>
 
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 5px;margin-bottom: 20px" (click)="openDialogUpdate(onedata,2)" *ngIf="(onedata.paymentVerified!=1&&onedata.paymentType==0)||(supportingDocumentStatus==1&&onedata.paymentType==1&&onedata.paymentVerified!=1)&&(onedata.idNumber!=''&&onedata.idNumber!=null)">
+      <span class="material-icons">
+        receipt
+      </span> Proof of payment</button>
 
 
 
        
        <span *ngIf="placementdata!=null">
-       <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="generatePDF()" *ngIf="placementdata.result=='P'">
+       <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="generatePDF()" *ngIf="placementdata.result=='P'&&proglevelval=='06'">
+          <span class="material-icons">
+            picture_as_pdf
+          </span> View Certificate</button>
+         <br><br>
+       </span>
+       
+       <span  *ngIf="paymentType==1&&proglevelval=='05'&&(!(onedata.idNumber!=''&&onedata.idNumber!=null))">
+       <button mat-raised-button color="primary" style="float:left;background-color: #3f51b5;color: white;margin-left: 10px" (click)="openDialogUpdate(onedata,3)">
       <span class="material-icons">
         picture_as_pdf
-      </span> View Certificate</button>
+      </span> Certificate</button>
          <br><br>
        </span>
 
 
 
       <div style="height: 25px"></div>
-    </div>
+    </div >
   <div style="float: right; width: 40%;" class="fullwidth" >
     <div style="padding: 20px 10px 40px 20px">
-       <h3 style="text-align: left;margin-top: 0px">Registration Status
-</h3>
+       <h3 style="text-align: left;margin-top: 0px">
+        <span *ngIf="paymentType==0">Registration Status</span>
+        <span *ngIf="paymentType==1">Pre-enrollment Status</span>
+    </h3>
 
+      <div *ngIf="paymentType==1">
+        <fieldset>
+           <legend>Certificate Verification</legend>
+
+           <mat-expansion-panel style="width: 260px" [expanded]="supportingDocumentStatus==0">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/onprocess.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+            Your pre-enrollment is on process. Please wait for the Guidance Office to verify your Certificate. Thank you.
+            </p>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel style="width: 260px" *ngIf="supportingDocumentStatus==0||(supportingDocumentStatus==1&&(onedata.idNumber==null||onedata.idNumber==''))" [expanded]="supportingDocumentStatus==1" >
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/noverified.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+            Your pre-enrollment is still on process.
+            </p>
+          </mat-expansion-panel>
+          <mat-expansion-panel style="width: 260px" [expanded]="supportingDocumentStatus==1&&
+          (onedata.proofOfPayment==null||onedata.proofOfPayment=='')&&onedata.paymentVerified==0"  
+          *ngIf="supportingDocumentStatus==1&&!((onedata.idNumber==null||onedata.idNumber==''))">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/verified.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0 0 8px 0;">
+            Your certificate has been verified. Click here for <a href="https://drive.google.com/file/d/129oe8zIRBC5V4cb39AlKti8Zeu2D0qnT/view" target="_blank">payment instructions</a>.
+            </p>
+            <p>
+              <span style="font-size: 17px;
+              background-color: #294a70;color:white;padding: 8px;border-radius: 15px
+              ">ID number: <b>{{onedata.idNumber}}</b></span><br><br>
+              <span>Please use this ID number when paying your pre-enrollment fee.<br> <br> 
+              After payment has been made, please upload a clear copy of your receipt thru this site. Please visit regularly this dashboard for update of status.<br><br> 
+              Thank you.</span>
+            </p>
+          </mat-expansion-panel>
+          <mat-expansion-panel style="width: 260px" [expanded]="supportingDocumentStatus==2"  *ngIf="supportingDocumentStatus==2">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/notverified.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+            
+                <b>Reupload Principal's Certification:</b><br>
+                {{onedata.remarksVerification}}
+            </p>
+          </mat-expansion-panel>
+        </fieldset>
+      </div>
+
+      <br>
+      <div *ngIf="paymentType==1">
+        <fieldset>
+           <legend>Payment Verification</legend>
+
+           <mat-expansion-panel style="width: 260px" [expanded]="(onedata.idNumber!=''&&onedata.idNumber!=null)" *ngIf="onedata.paymentVerified==0&&(onedata.proofOfPayment==null||onedata.proofOfPayment=='')">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/noonprocess.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+              <span *ngIf="(onedata.idNumber!=''&&onedata.idNumber!=null)">Please upload your proof of payment.</span>
+              <span  *ngIf="!(onedata.idNumber!=''&&onedata.idNumber!=null)">Payment not yet verified.</span>
+            </p>
+          </mat-expansion-panel>
+           <mat-expansion-panel style="width: 260px" *ngIf="(onedata.paymentVerified==0&&!(onedata.proofOfPayment==null||onedata.proofOfPayment==''))||onedata.paymentVerified!=0"
+
+           [expanded]="onedata.paymentVerified==0">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/onprocess.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+            Your pre-enrollment is on process. Please wait for the Accounting Office to verify your proof of pament. Thank you.
+            </p>
+          </mat-expansion-panel>
+           <mat-expansion-panel style="width: 260px" *ngIf="onedata.paymentVerified==0">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/noverified.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+              <span  *ngIf="(onedata.idNumber!=''&&onedata.idNumber!=null)">Your payment verification is still on process.</span>
+
+              <span  *ngIf="!(onedata.idNumber!=''&&onedata.idNumber!=null)">Certificate not yet verified.</span>
+            </p>
+          </mat-expansion-panel>
+           <mat-expansion-panel style="width: 260px" *ngIf="onedata.paymentVerified==1"  [expanded]="onedata.paymentVerified==1">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/verified.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+             Congratulations! You are now pre-enrolled for Grade 11 in USL Senior High School. For Updates regarding enrollment, kindly visit the <a href="https://www.facebook.com/OfficialUSLPhilippines" target="_blank">Official USL Facebook Page</a> or you may call or text at 09563078726 (SHS helpline number). Thank you.
+            </p>
+          </mat-expansion-panel>
+          <mat-expansion-panel style="width: 260px" *ngIf="onedata.paymentVerified==2">
+           <mat-expansion-panel-header>
+              <mat-panel-title>
+                 <table style="padding-top: 5px">
+                   <tr>
+                     <td>
+                        <img src="assets/notverified.png" style="height: 40px">
+                     </td>
+                     <td>
+                      <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                     </td>
+                   </tr>
+                 </table>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p style="margin: 0;">
+
+                <b>Reupload proof of payment:</b><br>
+                {{onedata.remarksVerification}}
+            </p>
+          </mat-expansion-panel>
+        </fieldset>
+      </div>
+
+<div *ngIf="paymentType==0">
        <style type="text/css">
          .mat-expansion-panel-header{
           padding-left: 2px;
           padding-right: 9px;
          }
        </style>
-      <mat-expansion-panel style="width: 280px" [expanded]="seeexpandend()==1">
+        <mat-expansion-panel style="width: 280px" [expanded]="seeexpandend()==1" *ngIf="!(checkproof)&&onedata.paymentVerified==0">
+       <mat-expansion-panel-header>
+          <mat-panel-title>
+             <table style="padding-top: 5px">
+               <tr>
+                 <td>
+                    <img src="assets/noonprocess.png" style="height: 40px">
+                 </td>
+                 <td>
+                  <!--  <button style="background-color: #3f51b5;color: white;border: none;border-radius:45%;height: 19px" (click)="global.swalInfo('On Process', 'Your registration is on process. Please wait (2-3 days) for the Accounting office to verify your payment.<br>Thank you!','info')" >?</button> -->
+                 </td>
+               </tr>
+             </table>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <p style="margin: 0;">
+          Please upload your proof of payment.
+        </p>
+      </mat-expansion-panel>
+      <mat-expansion-panel style="width: 280px" [expanded]="seeexpandend()==1" *ngIf="(checkproof)||onedata.paymentVerified!=0">
        <mat-expansion-panel-header>
           <mat-panel-title>
              <table style="padding-top: 5px">
@@ -453,7 +744,7 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <p style="margin: 0;">
-        Your registration is on process. Please wait for the Accounting office to verify your payment. Thank you!
+        Your registration is on process. Please wait for the Accounting Office to verify your payment. This can take three working days. Thank you.
         </p>
       </mat-expansion-panel>
 
@@ -475,7 +766,6 @@
 
       </mat-expansion-panel>
 
-
        <mat-expansion-panel style="width: 280px" *ngIf="onedata.paymentVerified==1"  [expanded]="seeexpandend()==2">
        <mat-expansion-panel-header>
           <mat-panel-title>
@@ -491,11 +781,11 @@
 
         <div *ngIf="proglevelval=='06'">
           Your registration is verified. Please wait for the text message or check this site for your exam schedule.
+        </div><div *ngIf="proglevelval=='05'">
+          Your Online grade 11 registration for entrance test is successful. Make sure not to change your provided contact number for you will receive a text message from SHS Guidance center a week before May 18, 2021 (entrance test date). For updates, kindly visit the <a href="https://www.facebook.com/OfficialUSLPhilippines" target="_blank">Official USL Facebook Page</a> or you may call or text at 09563078726 (SHS helpline number). Thank you.
         </div>
         <div *ngIf="proglevelval=='01'||proglevelval=='02'||proglevelval=='03'">
-          Your registration is verified. 
-          <br><br>
-          Parent/Guardian is requested to submit the following requirements through <a href="mailto:uslelemGO@gmail.com">uslelemGO@gmail.com</a>:
+          Your Online Registration is successful!<br><br>Please submit Registration Requirements through <a href="elemguidance@usl.edu.ph">elemguidance@usl.edu.ph</a>. 
          <br><br>
             <div *ngIf="proglevelval=='01'||proglevelval=='02'">
               <u>Pre-school and Kindergarten Pupils</u>:
@@ -515,7 +805,12 @@
                 <li>Report card with general average of 85% or above (to submit after the 4<sup>th</sup> grading period)</li>
               </ul>
             </div>
-          When complete requirements are submitted, wait 2-3 days for the confirmation text of exam schedule and requirements needed for online exam.
+          After submission of COMPLETE requirements, please wait for a confirmation text for your examination schedule. For more details, please visit the USL Facebook Page or call the Elementary Guidance Office at 0956-307-8717 or (078) 844-1873 loc. 404.
+        </div>
+
+        <div *ngIf="proglevelval=='04'">
+          Your online G7 registration for entrance test is successful. Make sure to not change your provided contact number, for you will receive a text message from JHS Guidance Center a week before April 8, 2021 (entrance test date). Please take note of the following dates for your guidance below.
+          
         </div>
       </mat-expansion-panel>
 
@@ -727,10 +1022,75 @@
 
       </mat-expansion-panel>
       </div>
-
+</div>
 
     </div>
      
+  </div>
+  <div style="margin: 0px 20px 20px 20px"  *ngIf="proglevelval=='04'&&onedata.paymentVerified==1">
+        <table class="apptable">
+            <tr>
+              <th>Online registration for entrance test</th>
+              <th>February 26 - March 22, 2021</th>
+            </tr>
+            <tr>
+              <td>
+                Online entrance test
+              </td>
+              <td>
+                April 8, 2021
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Posting of advance Science Qualifying Test (ASQT) qualifiers / Top 200
+              </td>
+              <td>
+                April 14, 2021
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Online Advance Science Qualifying Test (ASQT)
+              </td>
+              <td>
+                April 19, 2021
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Posting of Passers
+              </td>
+              <td>
+                April 26, 2021
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Online G7 pre-enrollment (passers)
+              </td>
+              <td>
+                April 28 - May 7, 2021
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Online G7 pre-enrollment (waitlist)
+              </td>
+              <td>
+                May 10, 2021
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Posting of sections
+              </td>
+              <td>
+                To be scheduled
+              </td>
+            </tr>
+          </table>
+      <div style="height: 40px"></div>
   </div>
   </div>
 

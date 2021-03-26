@@ -7,6 +7,8 @@ import { Inject} from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { GlobalService } from './../global.service';
 import { InfoComponent } from './../info/info.component';
+import Swal from 'sweetalert2';
+const swal = Swal;
 @Component({
   selector: 'app-update-reg',
   templateUrl: './update-reg.component.html',
@@ -48,18 +50,18 @@ export class UpdateRegComponent implements OnInit {
   currentdate
   currdatearray=[]
   strand=[]
+  orfor=''
   ngOnInit() {
-
-this.currentdate=this.global.currentdate
-this.currdatearray=this.global.currdatearray
-     this.strand=this.data.strand
-     this.proglevel=this.data.proglevel
+    this.currentdate=this.global.currentdate
+    this.currdatearray=this.global.currdatearray
+    this.strand=this.data.strand
+    this.proglevel=this.data.proglevel
 	  this.schools=this.data.schools
 	  this.courses=this.data.courses
 	  this.gradcourses=this.data.gradcourses
 	  this.strandfiltered=this.data.strandfiltered
 
-  	  this.proglevelval=this.data.onedata.programLevel
+  	this.proglevelval=this.data.onedata.programLevel
 	  this.fname=this.data.onedata.firstName
 	  this.mname=this.data.onedata.middleName
 	  this.lname=this.data.onedata.lastName
@@ -73,16 +75,33 @@ this.currdatearray=this.global.currdatearray
 	  this.courseval=this.data.onedata.preferredCourseID
 	  this.courseval1=this.data.onedata.alternativeCourseID1
 	  this.courseval2=this.data.onedata.alternativeCourseID2
-	  this.yeargrad=this.data.onedata.yearGraduated
+	  this.yeargrad=this.data.onedata.yearGraduated.toString()
 	  this.address=this.data.onedata.schoolAddressNoStreet
 	  this.permPSGC=this.data.onedata.schoolAddressPSGC
 	  this.strandval=this.data.onedata.shS_PriorityStrandID1
 	  this.strandval1=this.data.onedata.shS_PriorityStrandID2
-	  this.img=this.data.onedata.proofOfPayment
 	  this.pdate=this.data.onedata.datePaid
 	  this.remarks=this.data.onedata.remarks
+    if (this.data.onedata.paymentType==1) {
+      this.orfor = '2'
+    }else{
+      this.orfor = '1'
+    }
+    if ('0001-01-01T00:00:00'==this.data.onedata.datePaid) {
+      this.pdate = ''
+    }
+     if (this.data.type==2) {
+        this.img=this.data.onedata.proofOfPayment
+     }
+     if (this.data.type==3) {
+        this.img=this.data.onedata.reportCard
+     }
 
 	  this.attachment = 'data:image/png;base64,'+this.img
+
+      if (this.proglevelval=='05'&&this.data.type==2&&(this.data.onedata.idNumber!=null&&this.data.onedata.idNumber!='')) {
+        this.checkverified()
+      }
   }
 
   schoolstemp=[]
@@ -125,6 +144,20 @@ var date
     var pdate
     pdate = new Date(this.pdate).toLocaleString();
   	var x=''
+    var gradcheck = false
+
+    if(this.proglevelval=='04'||this.proglevelval=='05'||this.proglevelval=='06'||this.proglevelval=='07'){
+      var gradcheck = true
+      for (var i2 = 0; i2 < this.schools.length; ++i2) {
+       if(this.gradfrom==this.schools[i2].companyName){
+         gradcheck=false
+         break
+       }
+      }
+    }
+    if (gradcheck) {
+      x=x+"*School Graduated from must be selected!<br>"
+    }
   	if (this.fname == '') {
   		x=x+"*First name is required!<br>"
   	}
@@ -132,7 +165,7 @@ var date
   		x=x+"*Last name is required!<br>"
   	}
   	if (this.gender == '') {
-  		x=x+"*Gender is required!<br>"
+  		x=x+"*Sex is required!<br>"
   	}
     if (this.cnumber == '') {
       x=x+"*Contact number is required!<br>";
@@ -142,12 +175,12 @@ var date
       }
     }
     
-    if (this.pdate == '') {
-      x=x+"*Date of Payment is required!<br>"
-    }
-    if (this.img == '') {
-      x=x+"*Proof Payment is required!<br>"
-    }
+    // if (this.pdate == '') {
+    //   x=x+"*Date of Payment is required!<br>"
+    // }
+    // if (this.img == '') {
+    //   x=x+"*Proof Payment is required!<br>"
+    // }
     
     if (this.bdate == '') {
       x=x+"*Birth date is required!<br>"
@@ -171,9 +204,9 @@ var date
     }
     if (this.proglevelval=='05') {
       if (this.strandval == '') {
-        x=x+"*Strand Priority 1 is required!<br>"
+        x=x+"*Strand Priority is required!<br>"
       }
-      if (this.strandval1 == '') {
+      if (this.strandval1 == ''&&this.orfor=='1') {
         x=x+"*Strand Priority 2 is required!<br>"
       }
     }
@@ -204,6 +237,16 @@ var date
       }
     }
 
+      if (this.img!=''&&this.data.type==2) {
+         if (this.pdate == '') {
+          x=x+"*Date of Payment is required!<br>"
+        }
+      }
+      if (this.pdate != ''&&this.data.type==2) {
+        if (this.img == '') {
+          x=x+"*Proof Payment is required!<br>"
+        }
+      }
   	if (x=='') {
       var address=''
       var companyid=''
@@ -245,10 +288,26 @@ var date
 
       var sy = this.global.sy
 
+      var PaymentType=0
+      if(this.orfor=='2'&&this.proglevelval=='05'&&(this.data.type==1||this.data.type==3||this.data.type==2)){
+        PaymentType=1
+      }
       if (this.proglevelval=='01'||this.proglevelval=='02'||this.proglevelval=='04'||this.proglevelval=='05') {
         if(this.global.sy.length == 7){
           sy = this.global.sy.slice(0, -1) 
         }
+      }
+
+      if (this.data.type==3) {
+        this.data.onedata.reportCard = this.img
+      }
+      if (this.data.type==2) {
+        this.data.onedata.proofOfPayment = this.img
+      }
+      var SupportingDocumentStatus= this.data.onedata.supportingDocumentStatus
+
+      if (this.data.type==3) {
+        SupportingDocumentStatus = 0
       }
      	this.http.put(this.global.api+'OnlineRegistration/Applicant/'+ this.data.onedata.applicantNo,
     	{
@@ -274,17 +333,19 @@ var date
         "TopOfMyClass": this.condition,
         "Remark": this.data.onedata.remarks,
         "SchoolYear": sy,
-        "ProofOfPayment": this.img,
+        "ProofOfPayment": this.data.onedata.proofOfPayment,
         "EmailAddress": this.global.email,
         "PaymentVerified": 0,
     		"RemarksVerification":  this.data.onedata.remarksVerification,
     		"ReportCard": this.data.onedata.reportCard,
     		"ReferenceNo": "",
         "DatePaid": this.pdate,
-        "PaymentType": 0,
+        "PaymentType": PaymentType,
+        "SupportingDocumentStatus": SupportingDocumentStatus
 			},option)
             .map(response => response.json())
             .subscribe(res => {
+              
                 this.global.swalSuccess2("Applicant Info Updated!")
                 this.dialogRef.close({result:'updated'});
               },Error=>{
@@ -337,5 +398,219 @@ var date
     this.strandval1=''
     this.top = false
     this.accept = false
+  }
+
+  encryp=''
+  preenrollment=false
+  serverdate
+  checkverified(){
+    this.global.swalLoading('')
+this.http.get(this.global.api+'PublicAPI/CurrentServerTime')
+  .map(response => response.json())
+  .subscribe(res => {
+    var today:any = new Date(res.data);
+    var dd = String(today.getDate()-1).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = mm + '/' + dd + '/' + yyyy;
+    this.serverdate = today
+    this.http.get(this.global.api+'OnlineRegistration/EncryptedString/'+this.data.onedata.idNumber,this.global.option)
+        .map(response => response.json())
+        .subscribe(res => {
+          this.encryp=res.data
+           this.http.get(this.global.api2+'?action=VerifyPreEnrollment&en='+encodeURIComponent(this.encryp)+'&year='+encodeURIComponent(this.serverdate.substr(this.serverdate.length - 4)))
+              .map(response => response.json())
+              .subscribe(res => {
+                this.global.swalClose()
+                this.preenrollment=res.data
+                //this.preenrollment=true
+              },Error=>{
+                console.log(Error);
+                this.global.swalAlert("Server not found!","ACCOUNTING SERVER MAY NOT BE AVAILABLE!",'warning');
+                });
+         },Error=>{
+            console.log(Error);
+            this.global.swalAlert("Server not found!","ACCOUNTING SERVER MAY NOT BE AVAILABLE!",'warning');
+          });
+    },Error=>{
+        console.log(Error);
+        this.global.swalAlertError();
+      });
+  }
+
+
+
+  message=''
+  preference:any=[]
+  swalConfirm(title,text,type,button)
+  {
+    swal.fire({
+        title: title,
+        text: text,
+        type: type,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: button
+      }).then((result) => {
+        if (result.value) {
+        var date = new Date(this.bdate).toLocaleString();
+        var pdate = new Date(this.pdate).toLocaleString();
+        if (this.preenrollment) {
+          pdate = null
+          this.img=null
+        }
+      var address=''
+      var companyid=''
+      //this.global.swalLoading('');
+      for (var i = 0; i < this.schools.length; ++i) {
+        if (this.schools[i].companyName == this.gradfrom) {
+          address = this.schools[i].address
+          companyid = this.schools[i].companyID
+          break
+        }
+      }
+      var strandid
+      if (this.collegestrandval=='') {
+        strandid = 0
+      }else
+        strandid = parseInt(this.collegestrandval)
+
+
+      var year
+      if (this.yeargrad=='') {
+        year = 0
+      }else
+        year = parseInt(this.yeargrad)
+      
+      var strandval
+      if (this.strandval=='') {
+        strandval = 0
+      }else
+        strandval = parseInt(this.strandval)
+
+      var strandval1
+      if (this.strandval1=='') {
+        strandval1 = 0
+      }else
+        strandval1 = parseInt(this.strandval1)
+        this.global.swalLoading("")
+      var option=this.global.requestToken()
+
+
+      var sy = this.global.sy
+
+      var PaymentType=0
+      if(this.orfor=='2'&&this.proglevelval=='05'&&(this.data.type==1||this.data.type==3||this.data.type==2)){
+        PaymentType=1
+      }
+      if (this.proglevelval=='01'||this.proglevelval=='02'||this.proglevelval=='04'||this.proglevelval=='05') {
+        if(this.global.sy.length == 7){
+          sy = this.global.sy.slice(0, -1) 
+        }
+      }
+
+      if (this.data.type==3) {
+        this.data.onedata.reportCard = this.img
+      }
+      if (this.data.type==2) {
+        this.data.onedata.proofOfPayment = this.img
+      }
+                  this.accept = true
+                     this.http.put(this.global.api+'OnlineRegistration/Applicant/'+this.data.onedata.applicantNo ,{
+                        "ProgramLevel": this.proglevelval,
+                        "FirstName": this.fname.toUpperCase(),
+                        "MiddleName": this.mname.toUpperCase(),
+                        "LastName": this.lname.toUpperCase(),
+                        "SuffixName": this.suffix.toUpperCase(),
+                        "DateOfBirth": date,
+                        "Gender": this.gender,
+                        "ContactNumber": this.cnumber,
+                        "ContactPerson": this.cperson,
+                        "SchoolGraduatedFrom": this.gradfrom,
+                        "StrandId": strandid,
+                        "PreferredCourseId": this.courseval,
+                        "AlternativeCourseId1": this.courseval1,
+                        "AlternativeCourseId2": this.courseval2,
+                        "YearGraduated": year,
+                        "SchoolAddressNoStreet": this.address,
+                        "SchoolAddressPSGC":  this.permPSGC,
+                        "SHS_PriorityStrandID1": this.strandval,
+                        "SHS_PriorityStrandID2": this.strandval1,
+                        "TopOfMyClass": this.condition,
+                        "Remark": this.data.onedata.remarks,
+                        "SchoolYear": sy,
+                        "ProofOfPayment": this.data.onedata.proofOfPayment,
+                        "EmailAddress": this.global.email,
+                        "PaymentVerified": 1,
+                        "RemarksVerification":  this.data.onedata.remarksVerification,
+                        "ReportCard": this.data.onedata.reportCard,
+                        "ReferenceNo": "",
+                        "DatePaid": this.pdate,
+                        "PaymentType": PaymentType,
+                        "SupportingDocumentStatus": 1
+                      },this.global.option)
+                        .map(response => response.json())
+                        .subscribe(res => {
+
+                          if (this.preenrollment) {
+                           this.http.get(this.global.api+'OnlineRegistration/'+this.data.onedata.idNumber,this.global.option)
+                           .map(response => response.json())
+                              .subscribe(res => {
+                                this.preference=res.data
+                                 this.preference.shS_PriorityStrandId1 = this.getnotnull(this.strandval)
+                                 this.preference.examForSchoolYear = this.global.sy
+                                 this.http.put(this.global.api+'OnlineRegistration/Placement/'+this.data.onedata.idNumber,{
+                                    "ExamDate": this.preference.examDate,
+                                    "PreferredCourse": this.preference.preferredCourse,
+                                    "AlternativeCourse": this.preference.alternativeCourse,
+                                    "Level": 0,
+                                    "VIT": this.preference.vit,
+                                    "NVIT": this.preference.nvit,
+                                    "PreferredCourseId": this.preference.preferredCourseId,
+                                    "AlternativeCourseId1": this.preference.alternativeCourseId1,
+                                    "AlternativeCourseId2": this.preference.alternativeCourseId2,
+                                    "ExemptionType":this.preference.exemptionType,
+                                    "Strand": this.preference.strand,
+                                    "Result": "P",
+                                    "GResult": this.preference.gResult,
+                                    "TestSchedule":this.preference.testScheduleId,
+                                    "ExamRoom":this.preference.examRoom,
+                                    "ExamForSchoolYear": this.preference.examForSchoolYear,
+                                    "Elem_ExamResult": this.preference.elem_ExamResult,
+                                    "Elem_CourseId": this.preference.elem_CourseId,
+                                    "Elem_Course": this.preference.elem_Course,
+                                    "JHS_ExamResult":this.preference.jhS_ExamResult,
+                                    "JHS_CourseId": this.preference.jhS_CourseId,
+                                    "JHS_Course": this.preference.jhS_Course,
+                                    "SHS_ExamResult":this.preference.shS_ExamResult,
+                                    "SHS_PriorityStrandId1": this.preference.shS_PriorityStrandId1,
+                                    "SHS_PriorityStrand1": this.preference.shS_PriorityStrand1,
+                                    "SHS_PriorityStrandId2": this.preference.shS_PriorityStrandId2,
+                                    "SHS_PriorityStrand2": this.preference.shS_PriorityStrand2
+                                  },this.global.option)
+                                    .map(response => response.json())
+                                    .subscribe(res => {
+                                      console.log(res)
+                                        this.global.swalSuccess2("Pre-enrollment success!")
+                                        this.dialogRef.close({result:'updated'});
+                                    });
+                                });
+                                }else{
+                                 //this.global.swalSuccess2("Pre-enrollment success!")
+                                }
+                                //this.getdata()
+                                },Error=>{
+                                  this.global.swalAlertError();
+                                });
+                  }  
+      })
+  }
+  getnotnull(y){
+    var x=y
+    if (x==null) {
+      x=''
+    }
+    return x
   }
 }

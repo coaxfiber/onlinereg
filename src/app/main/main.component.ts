@@ -15,7 +15,7 @@ export class MainComponent implements OnInit {
   vars
   proglevelval=''
   fullname=''
-
+  applicantNo=''
   currentstrand=''
 
   strandp1=''
@@ -88,7 +88,7 @@ export class MainComponent implements OnInit {
       }
     }
     this.fullname = this.vars.LastName + ', ' + this.vars.FirstName + " " + this.vars.MiddleName +" " + this.vars.SuffixName
-   
+    this.applicantNo = this.vars.applicantNo
   }
 
 closethis(){

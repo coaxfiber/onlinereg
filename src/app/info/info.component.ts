@@ -69,7 +69,7 @@ constructor(public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponen
         }
         // code...
       }
-      console.log({result:this.bar +", "+ this.town+", "+this.prov,data:bar})
+      //console.log({result:this.bar +", "+ this.town+", "+this.prov,data:bar})
        this.dialogRef.close({result:this.bar +", "+ this.town+", "+this.prov,data:bar});
   	}else{
   		alert(x)

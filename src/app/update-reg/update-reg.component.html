@@ -18,6 +18,7 @@
     <div style="height: 10px"></div>
 
   <div>
+  <div *ngIf="data.type==1">
     <table style="width: 100%">
       <tr> 
         <td style="width: 100%;padding-left: 30px;padding-right: 30px;margin-top: -10px">
@@ -44,11 +45,35 @@
       <mat-checkbox  [(ngModel)]="condition">You must have a </mat-checkbox> general weighted average of at least 80%.
     </p>
 
-    <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='05'">
+     <div style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='05'">
+    
+    <table style="width: 100%" >
+      <tr>
+        <td style="width: 170px"> Online Registration for: </td>
+        <td>
+          <select class="select-css"   [(ngModel)]="orfor">
+            <option value="">- Select -</option>
+            <option value="1">Entrance Exam</option>
+            <option value="2">Pre-Enrollment (Incoming Grade 11)</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td style="padding: 10px;">
+          <span style="font-size: 13px"  *ngIf="orfor=='1'">Note: For Entrance Examination!</span>
+          <span style="font-size: 13px"  *ngIf="orfor=='2'">Note: For Pre enrollment of grade 11 in science high etc.!</span>
+        </td>
+      </tr>
+    </table>
+
+    </div>
+
+    <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 40px;padding-right: 30px" *ngIf="proglevelval=='05'&&orfor=='1'">
       <mat-checkbox  [(ngModel)]="condition" >You must have a </mat-checkbox> general weighted average of at least 80% with no failing grades in any of the grading periods.
     </p>
     <p style="padding-bottom: 15px;margin-top: -10px;margin-left: 48px;padding-right: 30px;font-size: 16px" *ngIf="(proglevelval=='01'||proglevelval=='02'||proglevelval=='03')&&condition"><b>Please provide child information and click register.</b></p>
-    <div *ngIf="proglevelval!=''&&condition">
+    <div *ngIf="proglevelval!=''&&(condition||(proglevelval=='05'&&orfor=='2'))">
     <div *ngIf="proglevelval!=''">
     <table style="width: 100%;margin-top: -15px">
       <tr>
@@ -163,13 +188,13 @@
     <div *ngIf="proglevelval=='05'">
       <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px">
             <mat-form-field appearance="outline" style="width: calc(100% - 10px);margin-right: 10px" class="fullwidth">
-              <mat-label>Select Strand Priority 1</mat-label>
+              <mat-label>Select Strand Priority</mat-label>
               <mat-select [(ngModel)]="strandval">
                 <mat-option *ngFor="let a of strandfiltered" value="{{a.strandId}}">{{a.strandTitle}}</mat-option>
               </mat-select>
             </mat-form-field>
       </div>
-      <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px">
+      <div style="padding-left: 30px;padding-right: 30px;margin-top: -10px"  *ngIf="orfor=='1'">
            
             <mat-form-field appearance="outline" style="width: calc(100% - 10px);margin-right: 10px" class="fullwidth">
               <mat-label>Select Strand Priority 2</mat-label>
@@ -178,7 +203,7 @@
               </mat-select>
             </mat-form-field>
       </div>
-      <p style="padding-left: 45px;padding-right: 30px;margin-top: -10px;margin-bottom: 25px"><a href="#">Learn more</a> about Academic Tracks.</p>
+    <!--   <p style="padding-left: 45px;padding-right: 30px;margin-top: -10px;margin-bottom: 25px"><a href="#">Learn more</a> about Academic Tracks.</p> -->
     </div>
 
     <div *ngIf="proglevelval=='06'">
@@ -225,6 +250,12 @@
           </mat-form-field>
     </div>    
     </div>
+
+    </div>
+    </div>
+    </div>
+</div>
+  <div *ngIf="data.type==2&&!preenrollment">
     <div  *ngIf="proglevelval!=''" style="padding-left: 30px;clear: both">
           <div style="float: left;width: 40%"  class="fullwidth">
             <div style="height: 5px"></div>
@@ -241,24 +272,49 @@
           </div>
 
 
-              <img [src]='attachment'  *ngIf='attachment!=""' style="width:calc(100% - 30px)" />
+              <img [src]='attachment'  *ngIf='attachment!="data:image/png;base64,null"&&attachment!=""&&attachment!="data:image/png;base64,"' style="width:calc(100% - 30px)"  />
 
             <div style="height: 15px"></div>
     </div>
+  </div>
+  <div *ngIf="data.type==2&&preenrollment" style="text-align: center">
+    <h4>Accounting Payment Verified!</h4>
+    Click the Pre-enroll button to successfully pre-enroll
+    <br><br><br>
+  </div>
+
+  <div *ngIf="data.type==3">
+    <div  *ngIf="proglevelval!=''" style="padding-left: 30px;clear: both">
+          <div class="fullwidth">
+            <div style="height: 5px"></div>
+              Upload Principal's Certification:<br>
+              <input mat-raised-button type="file" id="avatar" (change)="onFileChange($event)" #fileInput class="inputfile" style="margin-top: 10px;margin-bottom: 5px"/>
+          </div>
+
+
+              <img [src]='attachment'  *ngIf='attachment!="data:image/png;base64,null"&&attachment!=""&&attachment!="data:image/png;base64,"' style="width:calc(100% - 30px)"  />
+
+            <div style="height: 15px"></div>
+    </div>
+  </div>
 
 <button mat-raised-button color="primary" style="background-color: #B22222;color: white;margin-left: 20px" (click)="closethis()">
       <span class="material-icons">
       close
     </span> Cancel</button>
     
-    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="update()">
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)="update()" *ngIf="!preenrollment">
       <span class="material-icons">
         edit
       </span> Update</button>
-      <br>
-      <br>
-    </div>
-    </div>
-    </div>
 
+    <button mat-raised-button color="primary" style="float:right;background-color: #3f51b5;color: white;margin-right: 20px" (click)='swalConfirm("You are about to Pre-enroll.","Please confirm to proceed!","question","Confirm");' *ngIf="data.type==2&&preenrollment">
+      <span class="material-icons">
+        edit
+      </span> Pre enroll</button>
+
+
+      
+      <br>
+      <br>
   </mat-card>

@@ -6,6 +6,10 @@
 <h3 style="text-align: center">Applicant Information:</h3>
 <table  id="customers">
 	<tr>
+		<td width="200px">Applicant No: </td>
+		<td><b>{{applicantNo}}</b></td>
+	</tr>
+	<tr>
 		<td width="200px">ProgramLevel: </td>
 		<td>{{proglevelval}}</td>
 	</tr>
@@ -33,8 +37,8 @@
 		<td>Contact Person:</td>
 		<td>{{vars.ContactPerson}}</td>
 	</tr>
-	<tr>
-		<td>Date of Payment:</td>
+	<tr *ngIf="vars.pdate!='Invalid Date'&&false">
+		<td>Date of Payment:{{vars.pdate }}</td>
 		<td>{{vars.pdate | date: 'mediumDate'}}</td>
 	</tr>
 	<tr *ngIf="vars.ProgramLevel=='04'||vars.ProgramLevel=='05'||vars.ProgramLevel=='06'||vars.ProgramLevel=='07'">
@@ -64,7 +68,7 @@
 		<td>Strand Priority 1: </td>
 		<td>{{strandp1}}</td>
 	</tr>
-	<tr *ngIf="vars.ProgramLevel=='05'">
+	<tr *ngIf="vars.ProgramLevel=='05'&&vars.PaymentType==0">
 		<td>Strand Priority 2: </td>
 		<td>{{strandp2}}</td>
 	</tr>
@@ -83,7 +87,7 @@
 <br>
 You will receive a confirmation text from USLGuidance of your successful registration to the USL-CET with the following information:<br>
 </div>
-<div *ngIf="vars.ProgramLevel=='05'||vars.ProgramLevel=='04'">
+<div *ngIf="false">
 <b>Please take note of the following:</b><br>
 <ol>
 <li>Clear photocopy of Report Card with a GPA of 80% or above</li>

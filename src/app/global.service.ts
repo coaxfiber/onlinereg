@@ -7,6 +7,8 @@ const swal = Swal;
 export class GlobalService {
 
   api = "http://testserver.usl.edu.ph/api/";
+  api2 = "http://usl.edu.ph/pages/getphpfile/acctgapis.php/";
+  
   token
   header = new Headers();
   option:any;
@@ -26,12 +28,13 @@ export class GlobalService {
     return this.option
   }
 
- syDisplay(x){
+ syDisplay(x,i=null){
     var y = x.substring(0,4)
     var z = parseInt(y) + 1
     var a = y.toString() + " - " + z.toString();
     var b = x.substring(6,7)
-    var c
+    var c = ''
+    if(i==null){
     if (b=='1')
       c="1st Semester"
     else if (b=='2')
@@ -40,6 +43,7 @@ export class GlobalService {
       c="Summer"
     else
       c=""
+    }
     return c + " SY "+a
   }
 
