@@ -606,7 +606,7 @@ isNumeric(str) {
         "SchoolAddressPSGC":  this.permPSGC,
         "SHS_PriorityStrandID1": this.strandval,
         "SHS_PriorityStrandID2": this.strandval1,
-        "TopOfMyClass": this.condition,
+        "TopOfMyClass ": this.condition,
         "Remark": "",
         "SchoolYear": sy,
         "ProofOfPayment": null,

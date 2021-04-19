@@ -6,7 +6,7 @@ const swal = Swal;
 @Injectable()
 export class GlobalService {
 
-  api = "http://testserver.usl.edu.ph/api/";
+  api = "http://api.usl.edu.ph/api/";
   api2 = "http://usl.edu.ph/pages/getphpfile/acctgapis.php/";
   
   token
