@@ -349,7 +349,7 @@ var date
                 this.global.swalSuccess2("Applicant Info Updated!")
                 this.dialogRef.close({result:'updated'});
               },Error=>{
-                this.global.swalAlertError();
+                this.global.swalAlertError(Error);
                 console.log(Error)
               });
   	}else{
@@ -434,7 +434,7 @@ this.http.get(this.global.api+'PublicAPI/CurrentServerTime')
           });
     },Error=>{
         console.log(Error);
-        this.global.swalAlertError();
+        this.global.swalAlertError(Error);
       });
   }
 
@@ -601,7 +601,7 @@ this.http.get(this.global.api+'PublicAPI/CurrentServerTime')
                                 }
                                 //this.getdata()
                                 },Error=>{
-                                  this.global.swalAlertError();
+                                  this.global.swalAlertError(Error);
                                 });
                   }  
       })

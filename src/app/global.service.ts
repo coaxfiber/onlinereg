@@ -99,8 +99,9 @@ export class GlobalService {
     swal.close();
   }
 
-  swalAlertError()
+  swalAlertError(error=null)
   {
-   swal.fire('Connection Error!', 'USL Database Server may be down. Please try again later.', 'error');
+   if(error.status!=undefined)
+    swal.fire('Connection Error!', 'USL Database Server may be down. Please try again later.<br><br>'+"Error reference: ("+error.status+") "+error.statusText+"<br>Target: "+error.url.replace(this.api,''), 'error');
   }
 }

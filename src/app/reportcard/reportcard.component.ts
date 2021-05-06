@@ -89,7 +89,7 @@ export class ReportcardComponent implements OnInit {
                 this.global.swalSuccess2("Report Card Updated!")
                 this.dialogRef.close({result:this.img});
               },Error=>{
-                this.global.swalAlertError();
+                this.global.swalAlertError(Error);
                 console.log(Error)
               });
   		// code...

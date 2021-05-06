@@ -20,13 +20,13 @@ export class InfoComponent implements OnInit {
 	town=''
 	bar=''
 	bara=''
-constructor(public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponent>,@Inject(MAT_DIALOG_DATA) public data: any,private global: GlobalService,private http: Http) { 
+ constructor(public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponent>,@Inject(MAT_DIALOG_DATA) public data: any,private global: GlobalService,private http: Http) { 
     this.http.get(this.global.api+'PublicAPI/Provinces',this.global.option)
 	  .map(response => response.json())
 	  .subscribe(res => {
 	   this.provinces = res
 	  },Error=>{
-	    this.global.swalAlertError();
+	    this.global.swalAlertError(Error);
 	  });
   } gettowncity(province){
 	this.town = '';
@@ -36,7 +36,7 @@ constructor(public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponen
 	  .subscribe(res => {
 	   this.towncity = res
 	  },Error=>{
-	    this.global.swalAlertError();
+	    this.global.swalAlertError(Error);
 	  });
   }
 
@@ -47,7 +47,7 @@ constructor(public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponen
 	  .subscribe(res => {
 	   this.barangay = res
 	  },Error=>{
-	    this.global.swalAlertError();
+	    this.global.swalAlertError(Error);
 	  });
   }
 

@@ -106,7 +106,6 @@ export class AppComponent {
        .map(response => response.json())
        .subscribe(res => {
         this.settingsall=res.data
-        console.log(res)
         for (var i = 0; i < res.data.length; ++i) {
           if(res.data[i].appName=="Online Registration"&&res.data[i].status==1){
             this.settings.push(res.data[i].level)
@@ -162,19 +161,19 @@ export class AppComponent {
                                       this.runupdate()
                                     }
                               },Error=>{
-                                   this.global.swalAlertError()
+                                   this.global.swalAlertError(Error);
                                   });
                          },Error=>{
-                           this.global.swalAlertError()
+                           this.global.swalAlertError(Error);
                           });
                  },Error=>{
-                   this.global.swalAlertError()  
+                   this.global.swalAlertError(Error);  
                   });
            },Error=>{
-             this.global.swalAlertError()
+             this.global.swalAlertError(Error);
             });
      },Error=>{
-       this.global.swalAlertError()
+       this.global.swalAlertError(Error);
       });
   }
 
@@ -250,7 +249,7 @@ runupdate(){
                }
              }
            },err=>{
-                 this.global.swalAlertError()
+                 this.global.swalAlertError(Error);
             });
 }
 
@@ -344,7 +343,7 @@ runafterget(res){
                    });
                
             },err=>{
-               this.global.swalAlertError()
+               this.global.swalAlertError(Error);
             });
       }else{
           this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.onedata.schoolYear+"/"+this.onedata.applicantNo)
@@ -650,7 +649,7 @@ isNumeric(str) {
             	
       this.accept = true
                               },Error=>{
-                                this.global.swalAlertError();
+                                this.global.swalAlertError(Error);
                                 console.log(Error)
       this.accept = true
                               });
