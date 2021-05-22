@@ -25,6 +25,8 @@ signInWithGoogle(): void {
       this.loggedIn = (user != null);
       if (user!=null) {
        this.global.email = user.email
+       //this.global.email = "juandelacruz@anonym.com"
+
        this.dialogRef.close({result:'ok'});
       }else{
         //this.global.swalAlert("Goolge Login Failed!",'Please Check your Internet Connectivity to proceed.','warning')
