@@ -25,7 +25,7 @@ signInWithGoogle(): void {
       this.loggedIn = (user != null);
       if (user!=null) {
        this.global.email = user.email
-       //this.global.email = "juandelacruz@anonym.com"
+       //this.global.email = "cudiamatdeviebia@gmail.com"
 
        this.dialogRef.close({result:'ok'});
       }else{

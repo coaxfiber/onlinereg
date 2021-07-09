@@ -51,6 +51,9 @@ export class ReportcardComponent implements OnInit {
   	if (this.attachment != '') {
   		this.global.swalLoading("Uploading")
     	var option=this.global.requestToken()
+      if(this.data.datePaid=='0001-01-01T00:00:00'){
+        this.data.datePaid=''
+      }
   		this.http.put(this.global.api+'OnlineRegistration/Applicant/'+ this.data.applicantNo,
     	{
         "ProgramLevel": this.data.programLevel,
@@ -78,16 +81,19 @@ export class ReportcardComponent implements OnInit {
         "ProofOfPayment":this.data.proofOfPayment,
         "EmailAddress": this.data.emailAdd,
         "PaymentVerified": this.data.paymentVerified,
-		"RemarksVerification":  this.data.remarksVerification,
-		"ReportCard": this.img,
-		"ReferenceNo": this.data.referenceNo,
+    		"RemarksVerification":  this.data.remarksVerification,
+    		"ReportCard": this.img,
+    		"ReferenceNo": this.data.referenceNo,
         "DatePaid": this.data.datePaid
 			},option)
             .map(response => response.json())
             .subscribe(res => {
-            	this.data.referenceNo = 
-                this.global.swalSuccess2("Report Card Updated!")
-                this.dialogRef.close({result:this.img});
+                if ('Applicant information updated successfully.'==res.message) {
+                  this.global.swalSuccess2("Report Card Updated!")
+                  this.dialogRef.close({result:this.img});
+                }else{
+                  this.global.swalAlert(res.message,'','warning')
+                }
               },Error=>{
                 this.global.swalAlertError(Error);
                 console.log(Error)
