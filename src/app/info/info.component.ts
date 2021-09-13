@@ -3,8 +3,8 @@ import { Inject} from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 
 import { GlobalService } from './../global.service';
-import {Http, Headers, RequestOptions} from '@angular/http';
 import { ViewChild,ElementRef } from '@angular/core';
+import { ApiService } from './../shared/api.service';
 
 @Component({
   selector: 'app-info',
@@ -20,8 +20,8 @@ export class InfoComponent implements OnInit {
 	town=''
 	bar=''
 	bara=''
- constructor(public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponent>,@Inject(MAT_DIALOG_DATA) public data: any,private global: GlobalService,private http: Http) { 
-    this.http.get(this.global.api+'PublicAPI/Provinces',this.global.option)
+ constructor(public api:ApiService,public dialog: MatDialog,public dialogRef: MatDialogRef<InfoComponent>,@Inject(MAT_DIALOG_DATA) public data: any,private global: GlobalService) { 
+    this.api.getPublicAPIProvinces()
 	  .map(response => response.json())
 	  .subscribe(res => {
 	   this.provinces = res
@@ -31,7 +31,7 @@ export class InfoComponent implements OnInit {
   } gettowncity(province){
 	this.town = '';
 	this.bar= '';
-	this.http.get(this.global.api+'PublicAPI/TownsCities/'+province,this.global.option)
+	this.api.getPublicAPITownsCities(province)
 	  .map(response => response.json())
 	  .subscribe(res => {
 	   this.towncity = res
@@ -42,7 +42,7 @@ export class InfoComponent implements OnInit {
 
   getbarangay(province,town){
 	this.bar = '';
-	this.http.get(this.global.api+'PublicAPI/Barangays/'+province+'/'+town,this.global.option)
+	this.api.getPublicAPIBarangays(province,town)
 	  .map(response => response.json())
 	  .subscribe(res => {
 	   this.barangay = res

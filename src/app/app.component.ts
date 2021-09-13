@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {Http, Headers, RequestOptions} from '@angular/http';
 import { GlobalService } from './global.service';
+import { ApiService } from './shared/api.service';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
@@ -77,13 +78,13 @@ export class AppComponent {
   paymentType=0
 
 
-  constructor(private authService: SocialAuthService,private _snackBar: MatSnackBar,private elRef:ElementRef,public dialog: MatDialog,private global: GlobalService,private http: Http){
+  constructor(private authService: SocialAuthService,private _snackBar: MatSnackBar,private elRef:ElementRef,public dialog: MatDialog,private global: GlobalService,public api:ApiService){
     
 
     setTimeout(console.log.bind(console, '%cStop!', 'color: red;font-size:75px;font-weight:bold;-webkit-text-stroke: 1px black;'), 0);
     setTimeout(console.log.bind(console, '%cThis is a browser feature intended for developers.', 'color: black;font-size:20px;'), 0);
 
-    this.http.get(this.global.api+'PublicAPI/CurrentServerTime',this.global.option)
+    this.api.getPublicAPICurrentServerTime()  
       .map(response => response.json())
       .subscribe(res => {
         var today:any = new Date(res.data);
@@ -102,7 +103,7 @@ export class AppComponent {
       });
     this.loading=true
 
-    this.http.get(this.global.api+'OnlineRegistration/Settings')
+    this.api.getOnlineRegistrationSettings()
        .map(response => response.json())
        .subscribe(res => {
         this.settingsall=res.data
@@ -111,7 +112,7 @@ export class AppComponent {
             this.settings.push(res.data[i].level)
           }
         }
-        this.http.get(this.global.api+'OnlineRegistration/ProgramLevel')
+        this.api.getOnlineRegistrationProgramLevel()
            .map(response => response.json())
            .subscribe(res => {
              this.proglevel=[]
@@ -121,7 +122,7 @@ export class AppComponent {
                }
                //this.proglevel.push({programLevel: "05", progLevelDesc: "SHS"})
              }
-             this.http.get(this.global.api+'OnlineRegistration/CoursesWithStrand')
+             this.api.getOnlineRegistrationCoursesWithStrand()
                  .map(response => response.json())
                  .subscribe(res => {
                    for (var i = 0; i < res.data.length; ++i) {
@@ -132,12 +133,12 @@ export class AppComponent {
                        this.gradcourses.push(res.data[i])
                      }
                    }
-                   this.http.get(this.global.api+'PublicAPI/Schools')
+                   this.api.getPublicAPISchools()
                          .map(response => response.json())
                          .subscribe(res => {
                            this.schools=res
                            //console.log(res)
-                           this.http.get(this.global.api+'PublicAPI/Strands')
+                           this.api.getPublicAPIStrands()
                                  .map(response => response.json())
                                  .subscribe(res => {
                                    this.strand=res.data
@@ -236,7 +237,7 @@ runupdate(){
         if(this.global.sy.length == 7){
           sy = this.global.sy.slice(0, -1) 
         }
-        this.http.get(this.global.api+'OnlineRegistration/Applicants/'+sy+'?emailAdd='+this.global.email)
+        this.api.getOnlineRegistrationApplicants(sy)
            .map(response => response.json())
            .subscribe(res => {
              this.login = true
@@ -317,8 +318,7 @@ runafterget(res){
       }
       this.placementdata=null
       if (res.data[0].idNumber!=null&&res.data[0].idNumber!='') {
-        //+res.data[0].idNumber
-        this.http.get(this.global.api+'OnlineRegistration/'+res.data[0].idNumber,this.global.option)         
+        this.api.getOnlineRegistration(res.data[0].idNumber)    
               .map(response => response.json())
               .subscribe(res => {
                if (res.data!=null) {
@@ -329,7 +329,7 @@ runafterget(res){
                    this.placementdata.examForSchoolYear=''
                  }
                }
-                this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.onedata.schoolYear+"/"+this.onedata.applicantNo)
+                this.api.getOnlineRegistrationApplicant(this.onedata.schoolYear,this.onedata.applicantNo)
                    .map(response => response.json())
                    .subscribe(res => {
                      if(res.data.length>0){
@@ -346,7 +346,7 @@ runafterget(res){
                this.global.swalAlertError(Error);
             });
       }else{
-          this.http.get(this.global.api+'OnlineRegistration/Applicant/'+this.onedata.schoolYear+"/"+this.onedata.applicantNo)
+        this.api.getOnlineRegistrationApplicant(this.onedata.schoolYear,this.onedata.applicantNo)
            .map(response => response.json())
            .subscribe(res => {
              if(res.data.length>0){
@@ -585,7 +585,7 @@ isNumeric(str) {
 
       }
     	var option=this.global.requestToken()
-    	this.http.post(this.global.api+'OnlineRegistration/Applicant' ,{
+    	this.api.postOnlineRegistrationApplicant({
         "ProgramLevel": this.proglevelval,
         "FirstName": this.fname.toUpperCase(),
         "MiddleName": this.mname.toUpperCase(),

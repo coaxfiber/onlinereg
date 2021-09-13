@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
 import {Http, Headers, RequestOptions} from '@angular/http';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
 import { Inject} from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { GlobalService } from './../global.service';
+import { ApiService } from './../shared/api.service';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
 
 @Component({
   selector: 'app-reportcard',
@@ -16,7 +17,7 @@ export class ReportcardComponent implements OnInit {
 	attachment=''
 	img=''
 	filetype=''
-   constructor(public global: GlobalService,public dialog: MatDialog,public dialogRef: MatDialogRef<ReportcardComponent>,@Inject(MAT_DIALOG_DATA) public data: any,private http: Http) { }
+   constructor(public global: GlobalService,public api:ApiService,public dialog: MatDialog,public dialogRef: MatDialogRef<ReportcardComponent>,@Inject(MAT_DIALOG_DATA) public data: any,private http: Http) { }
   
   ngOnInit() {
   	if(this.data.reportCard!=null&&this.data.reportCard!=''){
@@ -54,8 +55,7 @@ export class ReportcardComponent implements OnInit {
       if(this.data.datePaid=='0001-01-01T00:00:00'){
         this.data.datePaid=''
       }
-  		this.http.put(this.global.api+'OnlineRegistration/Applicant/'+ this.data.applicantNo,
-    	{
+      this.api.putOnlineRegistrationApplicant(this.data.applicantNo,{
         "ProgramLevel": this.data.programLevel,
         "FirstName": this.data.firstName,
         "MiddleName": this.data.middleName,
